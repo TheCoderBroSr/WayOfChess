@@ -41,16 +41,14 @@ def create_app(test_config=None):
         '''
         
         piece_position = {
-            "A1":"rl", "B1":"nl", "C1":"bl", "D1":"ql", "E1":"kl", "F1":"nl", "G1":"bl", "H1":"rl", 
-            "A8":"rd", "B8":"nd", "C8":"bd", "D8":"qd", "E8":"kd", "F8":"nd", "G8":"bd", "H8":"rd" 
+            "A1":"rl", "B1":"nl", "C1":"bl", "D1":"ql", "E1":"kl", "F1":"bl", "G1":"nl", "H1":"rl", 
+            "A8":"rd", "B8":"nd", "C8":"bd", "D8":"qd", "E8":"kd", "F8":"bd", "G8":"nd", "H8":"rd" 
             }
         
-
         # Adding pawns
         for i in range(8):
             piece_position[chr(65+i) + '2'] = "pl"
             piece_position[chr(65+i) + '7'] = "pd"
-
 
         return render_template('index.html', piece_position=piece_position)
 
