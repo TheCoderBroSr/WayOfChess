@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="chessboard">
+    {% for _ in range(8) %}
+    <div class="row">
+        {% for _ in range(8) %}
+        <div class="box"></div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
