@@ -2,10 +2,12 @@
 {% block content %}
 
 <div class="chessboard">
-    {% for _ in range(8) %}
-    <div class="row">
-        {% for _ in range(8) %}
-        <div class="box"></div>
+    {% for i in range(8,0,-1) %}
+    <div class="row" id="{{ i }}">
+        {% for j in range(8) %}
+        <div class="box" id="{{ 'ABCDEFGH'[j] }}">
+            <img src="{{ url_for('static', filename="assets/Chess_blt45.svg") }}" alt="">
+        </div>
         {% endfor %}
     </div>
     {% endfor %}

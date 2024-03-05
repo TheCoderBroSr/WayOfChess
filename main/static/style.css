@@ -6,7 +6,7 @@
     --light-blue-color: #3eb4a8;
     --dark-blue-color: #397586;
 
-    --chess-box-width: 55px;
+    --chess-box-width: 3.5em;
 }
 
 body {
@@ -41,6 +41,10 @@ body {
     width: var(--chess-box-width);
     background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color)) ;
     aspect-ratio: 1;    
+}
+
+.chessboard .row .box img {
+    width: var(--chess-box-width);
 }
 
 .chessboard .row:nth-child(even) .box:nth-child(odd),
