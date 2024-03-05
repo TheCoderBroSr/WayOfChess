@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <title>{% block title %}{% endblock %} Way of Chess</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1 class="main-title">WayOfChess</h1>
-  {% block content %}{% endblock %}
-</nav>
+<h1 class="main-title">WayOfChess</h1>
+{% block content %}{% endblock %}
