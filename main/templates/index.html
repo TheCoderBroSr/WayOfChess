@@ -5,8 +5,17 @@
     {% for i in range(8,0,-1) %}
     <div class="row" id="{{ i }}">
         {% for j in range(8) %}
-        <div class="box" id="{{ 'ABCDEFGH'[j] }}">
-            <img src="{{ url_for('static', filename="assets/Chess_blt45.svg") }}" alt="">
+        {% set j = 'ABCDEFGH'[j] %}
+        <div class="box" id="{{ j }}">
+            {% set i = i | string() %}
+            {% if j + i in piece_position.keys() %}
+                {% set piece_type = piece_position[j + i] %}
+                {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
+            {% else %}
+                {% set file_path = "" %}
+            {% endif %}
+
+            <img src="{{ url_for('static', filename=file_path) }}" alt="">
         </div>
         {% endfor %}
     </div>

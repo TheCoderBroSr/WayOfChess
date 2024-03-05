@@ -1,6 +1,8 @@
 import os
 
-from flask import Flask, render_template
+from flask import ( 
+    Flask, render_template, request, session, url_for
+)
 
 def create_app(test_config=None):
     # create and configure the app
@@ -26,6 +28,30 @@ def create_app(test_config=None):
     # a simple page that says hello
     @app.route('/')
     def index():
-        return render_template('index.html')
+        '''
+        k -> king
+        q -> queen
+        r -> rook
+        n -> knight
+        b -> bishop
+        p -> pawn
+
+        l -> light(white)
+        d -> dark(black)
+        '''
+        
+        piece_position = {
+            "A1":"rl", "B1":"nl", "C1":"bl", "D1":"ql", "E1":"kl", "F1":"nl", "G1":"bl", "H1":"rl", 
+            "A8":"rd", "B8":"nd", "C8":"bd", "D8":"qd", "E8":"kd", "F8":"nd", "G8":"bd", "H8":"rd" 
+            }
+        
+
+        # Adding pawns
+        for i in range(8):
+            piece_position[chr(65+i) + '2'] = "pl"
+            piece_position[chr(65+i) + '7'] = "pd"
+
+
+        return render_template('index.html', piece_position=piece_position)
 
     return app
