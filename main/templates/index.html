@@ -25,11 +25,8 @@
                     {% if j + i in piece_position.keys() %}
                         {% set piece_type = piece_position[j + i] %}
                         {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
-                    {% else %}
-                        {% set file_path = "" %}
+                        <img src="{{ url_for('static', filename=file_path) }}" alt="">
                     {% endif %}
-
-                    <img src="{{ url_for('static', filename=file_path) }}" alt="">
                 </div>
                 {% endfor %}
             </div>
