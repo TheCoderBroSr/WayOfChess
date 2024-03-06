@@ -22,6 +22,7 @@ def read_FEN(fen_str):
             print(row_num, col_num)
             if box.isdigit():
                 col_num += int(box)
+                continue
 
             elif box.isupper():
                 piece_position[chr(col_num + 65) + str(row_num)] = box.lower() + 'l'
