@@ -1,32 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="user-input">
-    <form action="" method="POST" name="user-input">
-        <input type="text" name="fen_position">
-        <button type="submit" name="set">Set Position</button>
-        <button type="submit" name="reset">Reset Position</button>
-    </form>
-</div>
-<div class="chessboard">
-    {% for i in range(8,0,-1) %}
-    <div class="row" id="{{ i }}">
-        {% for j in range(8) %}
-        {% set j = 'ABCDEFGH'[j] %}
-        <div class="box" id="{{ j }}">
-            {% set i = i | string() %}
-            {% if j + i in piece_position.keys() %}
-                {% set piece_type = piece_position[j + i] %}
-                {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
-            {% else %}
-                {% set file_path = "" %}
-            {% endif %}
+<div class="user-interaction">
+    <div class="user-input">
+        <form method="POST" name="user-input">
+            <label for="fen_position">Custom Position</label>
+            <input type="text" name="fen_position" placeholder="Enter FEN string">
 
-            <img src="{{ url_for('static', filename=file_path) }}" alt="">
-        </div>
-        {% endfor %}
+            <div class="button-cluster">
+                <button type="submit" name="set">Set Position</button>
+                <button type="submit" name="reset">Reset Position</button>
+            </div>
+        </form>
     </div>
-    {% endfor %}
-</div>
+    
+    <div class="chessboard-area">
+        <div class="chessboard">
+            {% for i in range(8,0,-1) %}
+            <div class="row" id="{{ i }}">
+                {% for j in range(8) %}
+                {% set j = 'ABCDEFGH'[j] %}
+                <div class="box" id="{{ j }}">
+                    {% set i = i | string() %}
+                    {% if j + i in piece_position.keys() %}
+                        {% set piece_type = piece_position[j + i] %}
+                        {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
+                    {% else %}
+                        {% set file_path = "" %}
+                    {% endif %}
 
+                    <img src="{{ url_for('static', filename=file_path) }}" alt="">
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}
