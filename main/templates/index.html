@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="user-input">
+    <form action="" method="POST" name="user-input">
+        <input type="text" name="fen_position">
+        <button type="submit" name="set">Set Position</button>
+        <button type="submit" name="reset">Reset Position</button>
+    </form>
+</div>
 <div class="chessboard">
     {% for i in range(8,0,-1) %}
     <div class="row" id="{{ i }}">

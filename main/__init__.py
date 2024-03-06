@@ -1,7 +1,7 @@
 import os
 
 from flask import ( 
-    Flask, render_template, request, session, url_for
+    Flask, render_template, request, session, url_for, flash
 )
 
 def create_app(test_config=None):
@@ -25,8 +25,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/')
+    from . import moves
+
+    @app.route('/', methods=('GET', 'POST'))
     def index():
         '''
         k -> king
@@ -40,15 +41,19 @@ def create_app(test_config=None):
         d -> dark(black)
         '''
         
-        piece_position = {
-            "A1":"rl", "B1":"nl", "C1":"bl", "D1":"ql", "E1":"kl", "F1":"bl", "G1":"nl", "H1":"rl", 
-            "A8":"rd", "B8":"nd", "C8":"bd", "D8":"qd", "E8":"kd", "F8":"bd", "G8":"nd", "H8":"rd" 
-            }
-        
-        # Adding pawns
-        for i in range(8):
-            piece_position[chr(65+i) + '2'] = "pl"
-            piece_position[chr(65+i) + '7'] = "pd"
+        start_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' # FEN str for starting position
+        piece_position = moves.read_FEN(start_position) # FEN -> Game Notation
+
+        if request.method == "POST" and 'reset' in request.form:
+            piece_position = moves.read_FEN(start_position)
+
+        elif request.method == "POST" and 'set' in request.form:
+            custom_position = request.form['fen_position']
+
+            try:
+                piece_position = moves.read_FEN(custom_position)
+            except:
+                flash('Invalid FEN string')
 
         return render_template('index.html', piece_position=piece_position)
 
