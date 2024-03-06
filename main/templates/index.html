@@ -34,4 +34,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.onclick = e => {
+        let box;
+        let row;
+
+        if (e.target.tagName == "IMG") {
+            box = e.target.parentNode;
+            row = box.parentNode;
+        } else if(e.target.classList.contains("box")) {
+            box = e.target;
+            row = box.parentNode;
+        }
+    
+        console.log(box.id + row.id);
+    }
+</script>
 {% endblock %}
