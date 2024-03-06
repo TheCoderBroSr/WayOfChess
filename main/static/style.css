@@ -6,7 +6,7 @@
     --light-blue-color: #3eb4a8;
     --dark-blue-color: #397586;
 
-    --chess-box-width: 3.5em;
+    --chess-box-width: 3.65em;
 }
 
 body {
@@ -25,7 +25,70 @@ body {
     color: var(--light-blue-color);
 }
 
+/* user interaction area */
+.user-interaction {
+    display: flex;
+
+}
+
+/* custom position form */
+.user-input {
+    flex: 2 2 auto;
+    width: 100%;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-input form {
+    background-color: var(--light-bg-color);
+    border: 3px solid var(--light-bg-color);
+    border-radius: 6px;
+    width: 80%;
+    padding: 1em;
+    margin: 0 auto;
+}
+
+.user-input input {
+    outline: 0;
+    width: 100%;
+    padding: 0.75em;
+    border: 3px solid white;
+    border-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+.user-input .button-cluster {
+    display: flex;
+}
+
+.user-input button {
+    outline: 0;
+    width: 50%;
+    padding: 0.75em;
+    border: 3px solid transparent;
+    border-radius: 6px;
+    background-color: var(--dark-blue-color);
+
+    box-sizing: border-box;
+}
+
+.user-input button[name='reset'] {
+    background-color: var(--light-blue-color);
+}
+ 
+.user-input button:hover {
+    cursor: pointer;
+}
+
 /* chessboard */
+.chessboard-area {
+    width: 100%;
+}
+
 .chessboard {
     margin: 0 auto;
     width: calc(var(--chess-box-width) * 8);
@@ -39,8 +102,8 @@ body {
 
 .chessboard .row .box{
     width: var(--chess-box-width);
-    background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color)) ;
-    aspect-ratio: 1;    
+    height: var(--chess-box-width);
+    background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color)) ;    
 }
 
 .chessboard .row .box img {
