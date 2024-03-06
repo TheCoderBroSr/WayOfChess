@@ -1,4 +1,4 @@
-def read_FEN(fen_str):
+def read_FEN(fen_str:str) -> dict:
     '''
     FEN -> Forsyth-Edwards Notation
 
@@ -19,7 +19,6 @@ def read_FEN(fen_str):
         col_num = 0
 
         for box in row:
-            print(row_num, col_num)
             if box.isdigit():
                 col_num += int(box)
                 continue
