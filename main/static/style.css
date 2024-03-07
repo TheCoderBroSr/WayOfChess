@@ -106,8 +106,13 @@ body {
     background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color)) ;    
 }
 
+.chessboard .row .active {
+    box-shadow: 0 0 2px 1px #EAEAEA inset;
+}
+
 .chessboard .row .box img {
     width: var(--chess-box-width);
+    cursor: grab;
 }
 
 .chessboard .row:nth-child(even) .box:nth-child(odd),
