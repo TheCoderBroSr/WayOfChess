@@ -35,7 +35,9 @@
     </div>
 </div>
 
-<script>
+<script defer>
+    let init_box, target_box;
+
     window.onclick = e => {
         let box, row, piece_type;
 
@@ -52,9 +54,34 @@
             row = box.parentNode;
         }
         
-        if (box != undefined && row != undefined) {
+        if (box && row && !init_box && piece_type) {
+            init_box = box;
+            box.classList.toggle('active');
+            
             console.log('Piece type: ' + piece_type);
             console.log(box.id + row.id);
+        } else if (box && row && init_box) {
+            target_box = box;
+            box.classList.toggle('active');
+        }
+
+        if (init_box && target_box) {
+            init_box.classList.remove('active');
+            target_box.classList.remove('active');
+            
+            if (target_box.children.length == 1) {
+                target_box.firstElementChild.src = init_box.firstElementChild.src
+            } else {
+                var piece = document.createElement("img");
+                piece.src = init_box.firstElementChild.src;
+
+                target_box.appendChild(piece);
+            }
+
+            init_box.firstElementChild.src = "";
+
+            init_box = undefined;
+            target_box = undefined;
         }
     }
 </script>
