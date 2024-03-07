@@ -65,6 +65,16 @@
             box.classList.toggle('active');
         }
 
+        if (init_box && target_box && init_box == target_box) {
+            init_box.classList.remove('active');
+            target_box.classList.remove('active');
+            
+            console.log('Error: initial and target square same');
+
+            init_box = undefined;
+            target_box = undefined;
+        }
+
         if (init_box && target_box) {
             init_box.classList.remove('active');
             target_box.classList.remove('active');
