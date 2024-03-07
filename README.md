@@ -27,7 +27,7 @@ Can be accessed @ [﻿github.com/TheCoderBroSr/WayOfChess](https://github.com/Th
    On windows(CMD):
 
    ```
-   <name_of_venv>\Scripts\Activate.bat
+   <name_of_venv>\Scripts\Activate
    ```
 
 6. Install the pip dependencies in `requirements.txt` using the following command:
