@@ -62,13 +62,11 @@
             console.log(box.id + row.id);
         } else if (box && row && init_box) {
             target_box = box;
-            box.classList.toggle('active');
         }
 
         if (init_box && target_box && init_box == target_box) {
             init_box.classList.remove('active');
-            target_box.classList.remove('active');
-            
+
             console.log('Error: initial and target square same');
 
             init_box = undefined;
@@ -77,7 +75,6 @@
 
         if (init_box && target_box) {
             init_box.classList.remove('active');
-            target_box.classList.remove('active');
             
             if (target_box.children.length == 1) {
                 target_box.firstElementChild.src = init_box.firstElementChild.src
