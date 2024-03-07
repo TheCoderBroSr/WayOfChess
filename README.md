@@ -10,27 +10,33 @@ Can be accessed @ [﻿github.com/TheCoderBroSr/WayOfChess](https://github.com/Th
 
 ## Running the Project
 1. Clone the GitHub repo
-2. Create a Python virtual environment in the project directory using the following command:
+2. Open the CMD (Windows) and change the current directory to the project directory
+
+   ```
+   cd <path_to_project>
+   ```
+   
+4. Create a Python virtual environment in the project directory using the following command:
    
    ```
    python -m venv <project_path>/<name_of_venv>
    ```
 
-3. Activate the virtual environment
+5. Activate the virtual environment
    
    On windows(CMD):
 
    ```
-   <project_path>\<name_of_venv>\Scripts\Activate.bat
+   <name_of_venv>\Scripts\Activate.bat
    ```
 
-4. Install the pip dependencies in `requirements.txt` using the following command:
+6. Install the pip dependencies in `requirements.txt` using the following command:
 
    ```
-   pip install -r <project_path>/requirements.txt
+   pip install -r requirements.txt
    ```
 
-5. Finally, run the flask project using the following command:
+7. Finally, run the flask project using the following command:
 
    ```
    flask --app main run
