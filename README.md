@@ -6,6 +6,42 @@ A simplified [﻿chess.com](https://chess.com/) copy :)
 
 Can be accessed @ [﻿github.com/TheCoderBroSr/WayOfChess](https://github.com/TheCoderBroSr/WayOfChess) 
 
+<ins>Note:</ins> Project still in development phase
+
+## Running the Project
+1. Clone the GitHub repo
+2. Open the CMD (Windows) and change the current directory to the project directory
+
+   ```
+   cd <path_to_project>
+   ```
+   
+4. Create a Python virtual environment in the project directory using the following command:
+   
+   ```
+   python -m venv <project_path>/<name_of_venv>
+   ```
+
+5. Activate the virtual environment
+   
+   On windows(CMD):
+
+   ```
+   <name_of_venv>\Scripts\Activate.bat
+   ```
+
+6. Install the pip dependencies in `requirements.txt` using the following command:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+7. Finally, run the flask project using the following command:
+
+   ```
+   flask --app main run
+   ```
+
 ## Gameplay
 - **Local 1v1 (White & Black)**
     - Profile creation (skip if already done).
