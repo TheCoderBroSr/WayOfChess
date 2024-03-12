@@ -35,10 +35,10 @@ def read_FEN(fen_str:str) -> dict:
 
 '''
 
-eg: 
+eg:
 {'A8': 'rd', 'B8': 'nd', 'C8': 'bd', 'D8': 'qd', 'E8': 'kd', 'F8': 'bd', 'G8': 'nd', 'H8': 'rd',
- 'A7': 'pd', 'B7': 'pd', 'C7': 'pd', 'D7': 'pd', 'E7': 'pd', 'F7': 'pd', 'G7': 'pd', 'H7': 'pd', 
- 'A2': 'pl', 'B2': 'pl', 'C2': 'pl', 'D2': 'pl', 'E2': 'pl', 'F2': 'pl', 'G2': 'pl', 'H2': 'pl', 
+ 'A7': 'pd', 'B7': 'pd', 'C7': 'pd', 'D7': 'pd', 'E7': 'pd', 'F7': 'pd', 'G7': 'pd', 'H7': 'pd',
+ 'A2': 'pl', 'B2': 'pl', 'C2': 'pl', 'D2': 'pl', 'E2': 'pl', 'F2': 'pl', 'G2': 'pl', 'H2': 'pl',
  'A1': 'rl', 'B1': 'nl', 'C1': 'bl', 'D1': 'ql', 'E1': 'kl', 'F1': 'bl', 'G1': 'nl', 'H1': 'rl'}
 
 '''
@@ -50,13 +50,13 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
 
     column = selected_piece_position[0] #A-H
     row = selected_piece_position[1] #1-8
-
+    legalMoves = []
     if selected_piece[0] == 'r': #Defining Rules for rook ('r')
         '''
         To check all legal moves for a rook we will:-
         -> Run a pointer in NSEW directions
-        -> If the pointer reaches a box with a piece, legal moves in the 
-           direction will extend from orignial position to 1 - the current 
+        -> If the pointer reaches a box with a piece, legal moves in the
+           direction will extend from orignial position to 1 - the current
            position of the pointer
         -> If the piece reaches the end of the board (A , H columns and 1,8 row we stop the pointer and add that position(if it is empty) and teriminate loop)
         -> Moving horizontally row value is constant and column value is changes by 1 every iteration. Since column is in
@@ -69,11 +69,9 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
 
         pointer_east = pointer_west = pointer_north = pointer_south = 0 #Initial Pointer Position
 
-        legalMoves = []
-
         east_f = west_f = north_f = south_f = True
         while east_f or west_f or north_f or south_f:
-            if east_f:  
+            if east_f:
                 pointer_east += 1 #Moving 1 step left
                 new_piece_position =  chr(int(ord(column)) - pointer_east) + row #Moving across a row , column changes and row is constant
                 if new_piece_position not in piece_position_table: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
@@ -113,12 +111,69 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
                     south_f = False
                 if new_piece_position[1]=='1' or new_piece_position[1]=='8':
                     south_f = False
+
+    if selected_piece[0] == 'b': #Defining rules of bishop ('b')
+        '''
+        To check all the moves of rook:
+        -> Run 4 pointers in NW , NE , SE , SW
+        -> If pointer reaches the edge of the board we terminate the loop
+        -> We will iterate by 1 place in both directions specifies. F.E for NS direction from A8 will iterate to (A+1 ,8-1) = B7 ....
+        '''
+        north_west_f = north_east_f = south_east_f = south_west_f = True
+        pointer_north_west_f = pointer_north_east_f = pointer_south_east_f = pointer_south_west_f = 0
+
+        while north_east_f or north_west_f or south_east_f or south_west_f: 
+            if north_east_f:
+                pointer_north_east_f += 1
+                new_piece_position = chr(int((ord(column)) + pointer_north_east_f)) + str((int(row) + pointer_north_east_f))
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    north_east_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    north_east_f = False
+            
+            if north_west_f:
+                pointer_north_west_f += 1
+                new_piece_position = chr(int((ord(column)) - pointer_north_west_f)) + str((int(row) + pointer_north_west_f))
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    north_west_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    north_west_f = False
+            
+            if south_east_f:
+                pointer_south_east_f += 1
+                new_piece_position = chr(int((ord(column)) - pointer_south_east_f)) + str((int(row) - pointer_south_east_f))
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_east_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    south_east_f = False
+            
+            if south_west_f:
+                pointer_south_west_f += 1
+                new_piece_position = chr(int((ord(column)) + pointer_south_west_f)) + str((int(row) - pointer_south_west_f))
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_west_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    south_west_f = False
+
+
     return sorted(legalMoves)
 
 if __name__ == '__main__':
-    #Sample values , to be changes one js python communication is active
-    piece_position_table = read_FEN('8/p7/4R1k1/7p/8/8/1N2P2K/8 w KQkq - 0 1')
-    selected_piece = 'rw'
-    selected_piece_position = 'E6'
+#Sample values , to be changes one js python communication is active
+    piece_position_table = read_FEN('Br1q1b2/p1p1pk2/1p1p2pp/3n1p2/3n2P1/1PP1P2R/P4K2/1N2QBN1 w KQkq - 0 1')
+    selected_piece = 'bw'
+    selected_piece_position = 'A8'
 
     print(legal_moves(piece_position_table, selected_piece , selected_piece_position))
