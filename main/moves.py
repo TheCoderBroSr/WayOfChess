@@ -43,21 +43,15 @@ eg:
 
 '''
 
-#Sample values , to be changes one js python communication is active
-board = read_FEN('8/p7/4R1k1/7p/8/8/1N2P2K/8 w KQkq - 0 1')
-Piece = 'rw'
-Piece_position = 'E6'
-
-
 #A function which will determine the piece and output a list of all legal moves for the piece
-def legalMove(piece_position , selectedPiece , selectedPiece_position):
+def legalMove(piece_position_table , selected_piece , selected_piece_position):
 
     #Defining Row and Column of Piece
 
-    column = selectedPiece_position[0] #A-H
-    row = selectedPiece_position[1] #1-8
+    column = selected_piece_position[0] #A-H
+    row = selected_piece_position[1] #1-8
 
-    if selectedPiece[0] == 'r': #Defining Rules for rook ('r')
+    if selected_piece[0] == 'r': #Defining Rules for rook ('r')
         '''
         To check all legal moves for a rook we will:-
         -> Run a pointer in NSEW directions
@@ -71,7 +65,7 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
         ->if a columb in 'A' or 'B' or if a row is '1' or '8' it will check that square and then break the loop for that direction
 
         '''
-        print(piece_position)
+        print(piece_position_table)
 
         pointer_east = pointer_west = pointer_north = pointer_south = 0 #Initial Pointer Position
 
@@ -82,7 +76,7 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
             if east_f:  
                 pointer_east += 1 #Moving 1 step left
                 new_piece_position =  chr(int(ord(column)) - pointer_east) + row #Moving across a row , column changes and row is constant
-                if new_piece_position not in board: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
+                if new_piece_position not in piece_position_table: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
                     legalMoves.append(new_piece_position)
                 else:
                     east_f = False
@@ -91,7 +85,7 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
             if west_f:
                 pointer_west += 1
                 new_piece_position =  chr(int(ord(column)) + pointer_west) + row    #Moving across a row , column changes and row is constant
-                if new_piece_position not in board:
+                if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
                     west_f = False
@@ -100,9 +94,9 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
             if north_f:
                 pointer_north += 1
                 print('run')
-                new_piece_position = column + str(pointer_north+ int(selectedPiece_position[1])) #Moving across a column , row changes and column is constant
+                new_piece_position = column + str(pointer_north+ int(selected_piece_position[1])) #Moving across a column , row changes and column is constant
                 print(new_piece_position)
-                if new_piece_position not in board:
+                if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
                     north_f = False
@@ -111,9 +105,9 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
             if south_f:
                 pointer_south += 1
                 print('run')
-                new_piece_position = column + str(int(selectedPiece_position[1]) - pointer_south) #Moving across a column , row changes and column is constant
+                new_piece_position = column + str(int(selected_piece_position[1]) - pointer_south) #Moving across a column , row changes and column is constant
                 print(new_piece_position)
-                if new_piece_position not in board:
+                if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
                     south_f = False
@@ -121,10 +115,10 @@ def legalMove(piece_position , selectedPiece , selectedPiece_position):
                     south_f = False
     return sorted(legalMoves)
 
-print(legalMove(board , Piece , Piece_position))
-        
+if __name__ == '__main__':
+    #Sample values , to be changes one js python communication is active
+    piece_position_table = read_FEN('8/p7/4R1k1/7p/8/8/1N2P2K/8 w KQkq - 0 1')
+    selected_piece = 'rw'
+    selected_piece_position = 'E6'
 
-
-         
-
-    
+    print(legalMove(piece_position_table, selected_piece , selected_piece_position))
