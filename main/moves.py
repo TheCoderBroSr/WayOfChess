@@ -44,7 +44,7 @@ eg:
 '''
 
 #A function which will determine the piece and output a list of all legal moves for the piece
-def legalMove(piece_position_table , selected_piece , selected_piece_position):
+def legal_moves(piece_position_table , selected_piece , selected_piece_position):
 
     #Defining Row and Column of Piece
 
@@ -121,4 +121,4 @@ if __name__ == '__main__':
     selected_piece = 'rw'
     selected_piece_position = 'E6'
 
-    print(legalMove(piece_position_table, selected_piece , selected_piece_position))
+    print(legal_moves(piece_position_table, selected_piece , selected_piece_position))
