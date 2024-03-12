@@ -64,6 +64,7 @@
             target_box = box;
         }
 
+        // Check to see whether intial and target square are same
         if (init_box && target_box && init_box == target_box) {
             init_box.classList.remove('active');
 
@@ -83,6 +84,7 @@
                 piece.src = init_box.firstElementChild.src;
 
                 target_box.appendChild(piece);
+                //remove image element from init_box
             }
 
             init_box.firstElementChild.src = "";

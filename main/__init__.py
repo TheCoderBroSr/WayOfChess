@@ -50,11 +50,13 @@ def create_app(test_config=None):
         elif request.method == "POST" and 'set' in request.form:
             custom_position = request.form['fen_position']
 
+            # Implement valid FEN string check
             try:
                 piece_position = moves.read_FEN(custom_position)
             except:
                 flash('Invalid FEN string')
 
+        # piece_position, curr_turn, moves, players -> session variables
         return render_template('index.html', piece_position=piece_position)
 
     return app
