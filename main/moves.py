@@ -44,7 +44,7 @@ eg:
 '''
 
 #A function which will determine the piece and output a list of all legal moves for the piece
-def legal_moves(piece_position_table , selected_piece , selected_piece_position):
+def legal_moves(piece_position_table:str , selected_piece:str , selected_piece_position:str) -> list:
 
     #Defining Row and Column of Piece
 
@@ -125,8 +125,8 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
         while north_east_f or north_west_f or south_east_f or south_west_f: 
             if north_east_f:
                 pointer_north_east_f += 1
-                new_piece_position = chr(int((ord(column)) + pointer_north_east_f)) + str((int(row) + pointer_north_east_f))
-                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                new_piece_position = chr(int((ord(column)) + pointer_north_east_f)) + str((int(row) + pointer_north_east_f)) #To move in NE direction our pointer moves +1 position in both column and row
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I': #This code checks that if the piece has moved to a position outside the respective directional loop will stop
                     north_east_f = False
                     continue
                 if new_piece_position not in piece_position_table:
@@ -136,7 +136,7 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
             
             if north_west_f:
                 pointer_north_west_f += 1
-                new_piece_position = chr(int((ord(column)) - pointer_north_west_f)) + str((int(row) + pointer_north_west_f))
+                new_piece_position = chr(int((ord(column)) - pointer_north_west_f)) + str((int(row) + pointer_north_west_f)) #To move in NW direction our pointer moves -1 position in column and +1 in row
                 if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
                     north_west_f = False
                     continue
@@ -147,7 +147,7 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
             
             if south_east_f:
                 pointer_south_east_f += 1
-                new_piece_position = chr(int((ord(column)) - pointer_south_east_f)) + str((int(row) - pointer_south_east_f))
+                new_piece_position = chr(int((ord(column)) - pointer_south_east_f)) + str((int(row) - pointer_south_east_f)) #To move in SE direction our pointer moves +1 position in column and -1 in row 
                 if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
                     south_east_f = False
                     continue
@@ -158,7 +158,7 @@ def legal_moves(piece_position_table , selected_piece , selected_piece_position)
             
             if south_west_f:
                 pointer_south_west_f += 1
-                new_piece_position = chr(int((ord(column)) + pointer_south_west_f)) + str((int(row) - pointer_south_west_f))
+                new_piece_position = chr(int((ord(column)) + pointer_south_west_f)) + str((int(row) - pointer_south_west_f)) #To move in SW direction our pointer moves -1 position in column and -1 in row 
                 if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
                     south_west_f = False
                     continue
