@@ -115,6 +115,10 @@ body {
     cursor: grab;
 }
 
+.chessboard .row .legal {
+    filter: contrast(1.2) brightness(0.75);
+}
+
 .chessboard .row:nth-child(even) .box:nth-child(odd),
 .chessboard .row:nth-child(odd) .box:nth-child(even) {
     /* background: var(--light-blue-color);     */
