@@ -36,7 +36,37 @@
 </div>
 
 <script defer>
-    let init_box, target_box;
+    let init_box, target_box, legal_moves;
+    const request = new XMLHttpRequest();
+    
+    request.onreadystatechange = function() {
+        if (request.readyState === XMLHttpRequest.DONE) {
+            if (request.status === 200) {
+                response = JSON.parse(request.responseText);
+                legal_moves = response.legal_moves;
+                display_legal_moves(legal_moves);
+            } else {
+                console.error('Error:', request.status);
+            }
+        }
+    };
+
+    function display_legal_moves(legal_moves) {
+        if (!legal_moves) {
+            console.error('Legal Moves not defined');
+            return -1;
+        }
+
+        for (var i = 0; i < legal_moves.length; i++) {
+            col_id = legal_moves[i][0];
+            row_id = legal_moves[i][1];
+
+            row_element = document.getElementById(row_id);
+            legal_box = row_element.querySelector('#' + col_id);
+
+            legal_box.classList.toggle('legal');
+        }
+    }
 
     window.onclick = e => {
         let box, row, piece_type;
@@ -63,17 +93,33 @@
         } else if (box && row && init_box) {
             target_box = box;
         }
-
+        
+        // Check to see if an initial square is selected
+        if (init_box && !target_box) {
+            var piece_data = {
+                selected_piece: piece_type.slice(6, 8),
+                selected_piece_position: box.id + row.id
+            }
+            
+            request.open("POST", "{{app_url}}/process_move");
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.send(JSON.stringify(piece_data));
+        }
+        
         // Check to see whether intial and target square are same
         if (init_box && target_box && init_box == target_box) {
             init_box.classList.remove('active');
 
-            console.log('Error: initial and target square same');
+            console.error('initial and target square same');
+
+            display_legal_moves(legal_moves);
 
             init_box = undefined;
+            legal_moves = undefined;
             target_box = undefined;
         }
 
+        // A semi-valid initial and target square chosen
         if (init_box && target_box) {
             init_box.classList.remove('active');
             
@@ -89,7 +135,10 @@
 
             init_box.firstElementChild.src = "";
 
+            display_legal_moves(legal_moves);
+
             init_box = undefined;
+            legal_moves = undefined;
             target_box = undefined;
         }
     }
