@@ -44,7 +44,7 @@ eg:
 '''
 
 #A function which will determine the piece and output a list of all legal moves for the piece
-def legal_moves(piece_position_table:str , selected_piece:str , selected_piece_position:str) -> list:
+def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
 
     #Defining Row and Column of Piece
 
@@ -65,7 +65,6 @@ def legal_moves(piece_position_table:str , selected_piece:str , selected_piece_p
         ->if a columb in 'A' or 'B' or if a row is '1' or '8' it will check that square and then break the loop for that direction
 
         '''
-        print(piece_position_table)
 
         pointer_east = pointer_west = pointer_north = pointer_south = 0 #Initial Pointer Position
 
@@ -172,8 +171,8 @@ def legal_moves(piece_position_table:str , selected_piece:str , selected_piece_p
 
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
-    piece_position_table = read_FEN('Br1q1b2/p1p1pk2/1p1p2pp/3n1p2/3n2P1/1PP1P2R/P4K2/1N2QBN1 w KQkq - 0 1')
+    piece_position_table = read_FEN('Br1q1b2/p1p1pk2/1p1p2pp/3n1p2/3n2P1/1PP1P2r/P4K2/1N2QBN1 w KQkq - 0 1')
     selected_piece = 'bw'
-    selected_piece_position = 'A8'
+    selected_piece_position = 'F1'
 
     print(legal_moves(piece_position_table, selected_piece , selected_piece_position))
