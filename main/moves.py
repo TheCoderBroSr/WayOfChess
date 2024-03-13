@@ -172,7 +172,7 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
     piece_position_table = read_FEN('Br1q1b2/p1p1pk2/1p1p2pp/3n1p2/3n2P1/1PP1P2r/P4K2/1N2QBN1 w KQkq - 0 1')
-    selected_piece = 'bw'
+    selected_piece = 'bl'
     selected_piece_position = 'F1'
 
     print(legal_moves(piece_position_table, selected_piece , selected_piece_position))
