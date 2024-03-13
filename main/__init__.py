@@ -1,7 +1,8 @@
 import os
+import json
 
 from flask import ( 
-    Flask, render_template, request, session, url_for, flash
+    Flask, render_template, request, session, url_for, flash, jsonify
 )
 
 def create_app(test_config=None):
@@ -25,6 +26,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    APP_URL = 'http://127.0.0.1:5000'
+
     from . import moves
 
     @app.route('/', methods=('GET', 'POST'))
@@ -42,8 +45,9 @@ def create_app(test_config=None):
         '''
         
         start_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' # FEN str for starting position
-        piece_position = moves.read_FEN(start_position) # FEN -> Game Notation
+        global piece_position
 
+        piece_position = moves.read_FEN(start_position) # FEN -> Game Notation
         if request.method == "POST" and 'reset' in request.form:
             piece_position = moves.read_FEN(start_position)
 
@@ -55,8 +59,21 @@ def create_app(test_config=None):
                 piece_position = moves.read_FEN(custom_position)
             except:
                 flash('Invalid FEN string')
+        elif request.method == "POST":
+            print(request.json)
 
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('index.html', piece_position=piece_position)
+        return render_template('index.html', piece_position=piece_position, app_url=APP_URL)
+
+    @app.route('/process_move', methods=['POST'])
+    def process_move():
+        piece_data = request.json
+        selected_piece = piece_data['selected_piece']
+        selected_piece_position = piece_data['selected_piece_position']
+
+        legal_moves = moves.legal_moves(piece_position, selected_piece, selected_piece_position)
+
+        response_data = {'legal_moves': legal_moves}
+        return jsonify(response_data), 200
 
     return app
