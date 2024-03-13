@@ -116,7 +116,7 @@ body {
 }
 
 .chessboard .row .legal {
-    filter: contrast(1.2) brightness(0.75);
+    filter: contrast(1.5) brightness(0.65);
 }
 
 .chessboard .row:nth-child(even) .box:nth-child(odd),
