@@ -3,7 +3,7 @@ import os
 import json
 
 from flask import ( 
-    Flask, render_template, request, session, url_for, flash, jsonify
+    Flask, render_template, request, session, url_for, flash, jsonify , sessions    
 )
 
 def create_app(test_config=None):
@@ -30,7 +30,6 @@ def create_app(test_config=None):
     APP_URL = 'http://127.0.0.1:5000'
     START_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' # FEN str for starting position
 
-
     @app.route('/', methods=('GET', 'POST'))
     def index():
         '''
@@ -44,34 +43,63 @@ def create_app(test_config=None):
         l -> light(white)
         d -> dark(black)
         '''
-        global piece_position_table
-        piece_position_table = moves.read_FEN(START_POSITION)
-        
+
+        if 'piece_position_table' not in session:
+            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+
+        if 'app_url' not in session:
+            session['app_url'] = APP_URL
 
         if request.method == "POST" and 'reset' in request.form:
-            piece_position_table = moves.read_FEN(START_POSITION)
+            session['piece_position_table'] = moves.read_FEN(START_POSITION)
 
         elif request.method == "POST" and 'set' in request.form:
             custom_position = request.form['fen_position']
 
             # Implement valid FEN string check
             try:
-                piece_position_table = moves.read_FEN(custom_position)
+                session['piece_position_table'] = moves.read_FEN(custom_position)
             except:
                 flash('Invalid FEN string')
 
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('index.html', piece_position_table=piece_position_table, app_url=APP_URL)
+        return render_template('index.html')
 
     @app.route('/process_move', methods=['POST'])
     def process_move():
+        '''
+        Custom HTTP Status Codes
+        210 -> Successful selected_piece info received
+        211 -> SUccessful piece movement/capture
+        '''
         piece_data = request.json
-        selected_piece = piece_data['selected_piece']
-        selected_piece_position = piece_data['selected_piece_position']
 
-        legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position)
+        if 'selected_piece' not in session:
+            session['selected_piece'] = None
+        
+        if 'selected_piece_position' not in session:
+            session['selected_piece_position'] = None
 
-        response_data = {'legal_moves': legal_moves}
-        return jsonify(response_data), 200
+        piece_position_table = session['piece_position_table']
 
+        if piece_data['data'] == 'initial_data':
+            session['selected_piece'] = piece_data['selected_piece']
+            session['selected_piece_position'] = piece_data['selected_piece_position']         
+            
+            legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position'])
+            response_data = {'legal_moves': legal_moves}
+            
+            return jsonify(response_data), 210
+        
+        if piece_data['data'] == 'target_data':
+            target_piece = piece_data['target_piece']
+            target_position = piece_data['target_box_position']
+            
+            piece_position_table[target_position] = session['selected_piece']
+            del piece_position_table[session['selected_piece_position']]
+
+            session['piece_position_table'] = piece_position_table
+
+            return jsonify({'piece_position_table': session['piece_position_table']}), 211
+        
     return app
