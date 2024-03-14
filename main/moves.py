@@ -73,43 +73,61 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
             if east_f:
                 pointer_east += 1 #Moving 1 step left
                 new_piece_position =  chr(int(ord(column)) - pointer_east) + row #Moving across a row , column changes and row is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    east_f = False
+                    continue
                 if new_piece_position not in piece_position_table: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
                     legalMoves.append(new_piece_position)
                 else:
-                    east_f = False
-                if new_piece_position[0]=='A' or new_piece_position[0]=='H': #Check the edge of the board
-                    east_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        east_f = False
+                    else:
+                        east_f = False
             if west_f:
                 pointer_west += 1
                 new_piece_position =  chr(int(ord(column)) + pointer_west) + row    #Moving across a row , column changes and row is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    west_f = False
+                    continue
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    west_f = False
-                if new_piece_position[0]=='A' or new_piece_position[0]=='H':
-                    west_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        west_f = False
+                    else:
+                        west_f = False
             if north_f:
                 pointer_north += 1
-                print('run')
                 new_piece_position = column + str(pointer_north+ int(selected_piece_position[1])) #Moving across a column , row changes and column is constant
-                print(new_piece_position)
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    north_f = False
+                    continue
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    north_f = False
-                if new_piece_position[1]=='1' or new_piece_position[1]=='8':
-                    north_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_f = False
+                    else:
+                        north_f = False
+                
             if south_f:
                 pointer_south += 1
-                print('run')
                 new_piece_position = column + str(int(selected_piece_position[1]) - pointer_south) #Moving across a column , row changes and column is constant
-                print(new_piece_position)
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_f = False
+                    continue
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    south_f = False
-                if new_piece_position[1]=='1' or new_piece_position[1]=='8':
-                    south_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_f = False
+                    else:
+                        south_f = False
+                
 
     if selected_piece[0] == 'b': #Defining rules of bishop ('b')
         '''
@@ -131,7 +149,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    north_east_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_east_f = False
+                    else:
+                        north_east_f = False
             
             if north_west_f:
                 pointer_north_west_f += 1
@@ -142,7 +164,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    north_west_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_west_f = False
+                    else:
+                        north_west_f = False
             
             if south_east_f:
                 pointer_south_east_f += 1
@@ -153,7 +179,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    south_east_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_east_f = False
+                    else:
+                        south_east_f = False
             
             if south_west_f:
                 pointer_south_west_f += 1
@@ -164,7 +194,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                 if new_piece_position not in piece_position_table:
                     legalMoves.append(new_piece_position)
                 else:
-                    south_west_f = False
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_west_f = False
+                    else:
+                        south_west_f = False
 
 
     return sorted(legalMoves)

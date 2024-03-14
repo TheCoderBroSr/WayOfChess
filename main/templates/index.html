@@ -44,6 +44,7 @@
             if (request.status === 200) {
                 response = JSON.parse(request.responseText);
                 legal_moves = response.legal_moves;
+                console.log(legal_moves)
                 display_legal_moves(legal_moves);
             } else {
                 console.error('Error:', request.status);
