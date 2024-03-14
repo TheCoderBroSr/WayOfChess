@@ -265,9 +265,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
             new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) - 1)) #bottom right
             new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) - 1)) #bottom left
             if new_piece_position_r in piece_position_table:
-                legalMoves.append(new_piece_position_r)
+                if piece_position_table[new_piece_position_r][1] != selected_piece[1]:
+                    legalMoves.append(new_piece_position_r)
             if new_piece_position_l in piece_position_table:
-                legalMoves.append(new_piece_position_l)
+                if piece_position_table[new_piece_position_l][1] != selected_piece[1]:
+                    legalMoves.append(new_piece_position_l)
         
         '''if selected_piece[1] == 'l' and selected_piece_position[1] == '8':
             legalMoves.append(f"promotion/{selected_piece}/{selected_piece_position}")
