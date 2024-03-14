@@ -1,0 +1,137 @@
+let init_box, target_box, legal_moves;
+const request = new XMLHttpRequest();
+    
+request.onreadystatechange = function() {
+    if (request.readyState === XMLHttpRequest.DONE) {
+        if (request.status === 210) {
+            response = JSON.parse(request.responseText);
+
+            legal_moves = response.legal_moves;
+            console.log(legal_moves);
+
+            toggle_legal_moves_box(legal_moves);
+
+        } else if (request.status === 211) {
+            update_target_box_element(init_box, target_box);
+            
+            target_box = undefined;
+            init_box = undefined;
+
+            toggle_legal_moves_box(legal_moves);
+            
+        } else {
+            console.error('Error:', request.status);
+        }
+    }
+}
+
+window.onclick = e => {
+    let box, row, piece_type;
+
+    if (e.target.tagName == "IMG") {// checks if selected square has an piece
+        let img = e.target;
+        box = img.parentNode;
+        row = box.parentNode;
+        
+        let img_path = img.src.split('/');
+        piece_type = img_path.at(-1);
+        
+    } else if(e.target.classList.contains("box")) { // checks if selected square is empty
+        box = e.target; 
+        row = box.parentNode;
+    } else { // Anything clicked apart from the board is ignored
+        return -1;
+    }
+    
+    if (box && row && !init_box && piece_type) {
+        // Valid position and position contains a piece, define initial piece if it doesn't exist
+        init_box = box;
+        init_box.classList.toggle('active');
+        
+        send_initial_piece_data(request, url, piece_type, row, box);
+
+        console.log('Piece type: ' + piece_type);
+        console.log(box.id + row.id);
+    } else if (box && row && init_box && box == init_box) {
+        init_box.classList.remove('active');
+        
+        toggle_legal_moves_box(legal_moves);
+
+        init_box = undefined;
+
+    } else if (box && row && init_box && box != init_box) { 
+        // Valid position and init_box already exists at different position. So define target piece
+        target_box = box;
+
+        init_box.classList.remove('active');
+        console.log('Target Box:', box.id + row.id);
+
+        if (piece_type) {
+            target_piece_type = piece_type.slice(6,8);
+        } else {
+            target_piece_type = '';
+        }
+
+        send_target_box_data(request, url, target_piece_type, row, box);
+        
+        legal_moves = undefined;      
+    }
+}
+
+function send_POST_data(request, url, data) {
+    // Send an AJAX POST request to a specified url
+    // request -> XMLHttpRequest() object
+    request.open("POST", url);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(data));
+}
+
+function send_initial_piece_data(request, url, piece_type, row, box) {
+    // Sends a POST request to Flask web server sending the selected piece data
+    var selected_piece_data = {
+        data: 'initial_data' ,
+        selected_piece: piece_type.slice(6, 8),
+        selected_piece_position: box.id + row.id
+    }
+
+    send_POST_data(request, url, selected_piece_data)
+}
+
+function send_target_box_data(request, url, piece_type, row, box) {
+    var target_box_data = {
+        data: 'target_data', 
+        target_piece: piece_type,
+        target_box_position: box.id + row.id
+    }
+
+    send_POST_data(request, url, target_box_data)
+}
+
+function toggle_legal_moves_box(legal_moves) {
+    if (!legal_moves) throw Error('legal_moves not defined');
+    
+    for (var i = 0; i < legal_moves.length; i++) {
+        const col_id = legal_moves[i][0];
+        const row_id = legal_moves[i][1];
+        
+        const row_element = document.getElementById(row_id);
+        const legal_box = row_element.querySelector(`#${col_id}`);
+        
+        legal_box.classList.toggle('legal');
+    }
+}
+
+function update_target_box_element(init_box, target_box) {
+    if (target_box.children.length == 1) {
+        target_box.firstElementChild.src = init_box.firstElementChild.src;
+        init_box.firstElementChild.src = '';
+    } else {
+        var piece = document.createElement("img");
+        piece.src = init_box.firstElementChild.src;
+        
+        target_box.appendChild(piece);
+        init_box.removeChild(init_box.firstElementChild);
+    }
+    
+    console.log(init_box, target_box);
+}
