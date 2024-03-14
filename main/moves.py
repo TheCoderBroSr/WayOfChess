@@ -209,4 +209,4 @@ if __name__ == '__main__':
     selected_piece = 'bl'
     selected_piece_position = 'F1'
 
-    print(legal_moves(piece_position_table, selected_piece , selected_piece_position))
+    (legal_moves(piece_position_table, selected_piece , selected_piece_position))

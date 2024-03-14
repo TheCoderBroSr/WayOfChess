@@ -2,7 +2,7 @@ import os
 import json
 
 from flask import ( 
-    Flask, render_template, request, session, url_for, flash, jsonify
+    Flask, render_template, request, session, url_for, flash, jsonify , sessions    
 )
 
 def create_app(test_config=None):
@@ -68,12 +68,23 @@ def create_app(test_config=None):
     @app.route('/process_move', methods=['POST'])
     def process_move():
         piece_data = request.json
-        selected_piece = piece_data['selected_piece']
-        selected_piece_position = piece_data['selected_piece_position']
 
-        legal_moves = moves.legal_moves(piece_position, selected_piece, selected_piece_position)
+        if piece_data['data'] == 'initial_data':
+            session['selected_piece'] = piece_data['selected_piece']
+            session['selected_piece_position']= piece_data['selected_piece_position']         
+            legal_moves = moves.legal_moves(piece_position, session['selected_piece'], session['selected_piece_position'])
+            response_data = {'legal_moves': legal_moves}
+            return jsonify(response_data), 200
+        if piece_data['data'] == 'target_data':
+            target_box = piece_data['target_box']
+            target_row = piece_data['target_row']
+            target_position = target_box+target_row
+            piece_position[target_position] = session['selected_piece']
+            del piece_position[session['selected_piece_position']]
+            
+        
 
-        response_data = {'legal_moves': legal_moves}
-        return jsonify(response_data), 200
+
+        return '1'
 
     return app
