@@ -18,6 +18,8 @@ request.onreadystatechange = function() {
             init_box = undefined;
 
             toggle_legal_moves_box(legal_moves);
+
+            legal_moves = undefined;
             
         } else {
             console.error('Error:', request.status);
@@ -72,9 +74,7 @@ window.onclick = e => {
             target_piece_type = '';
         }
 
-        send_target_box_data(request, url, target_piece_type, row, box);
-        
-        legal_moves = undefined;      
+        send_target_box_data(request, url, target_piece_type, row, box);      
     }
 }
 
