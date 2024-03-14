@@ -290,12 +290,12 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         new_piece_position_1D_2L = (chr(int(ord(selected_piece_position[0])) - 2) + str(int(selected_piece_position[1]) - 1)) #
 
         def knight_check(pos):
-            print(pos)
             if pos in piece_position_table:
                 if piece_position_table[pos][1] != selected_piece[1]:
-                   legalMoves.append(pos)
+                   if int(ord(pos[0])) >= 65 and int(ord(pos[0])) <= 72 and pos[1] != '-' and int(pos[1]) >= 1 and int(pos[1]) <= 8:
+                    legalMoves.append(pos)
             else:
-                if int(ord(pos[0])) >= 65 and int(ord(pos[0])) <= 72 and pos[1] != '-' and int(pos[1]) >= 1 and int(pos[1]) <= 8:
+                if int(ord(pos[0])) >= 65 and int(ord(pos[0])) <= 72 and pos[1] != '-' and int(pos[1:]) >= 1 and int(pos[1:]) <= 8:
                     legalMoves.append(pos)
         #Running check function for all 8 directions
         knight_check(new_piece_position_2U_1R)
