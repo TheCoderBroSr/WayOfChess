@@ -199,6 +199,80 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                         south_west_f = False
                     else:
                         south_west_f = False
+        
+    if selected_piece[0] == 'p':
+        '''
+        For pawn moving 2 or 1 position
+        ->Check the row of the board to see if the pawn can move 2 spaces ahead. #Check 1
+        ->If it can move 2 spaces ahead check if anything is blocking the path #Check 2
+
+        ->if white pawn is on 5th row and opposing pawn moves to adjacent left or right positions en passent is activated.
+        '''
+
+        print(selected_piece , selected_piece_position)
+        if (selected_piece[1] == 'l' and selected_piece_position[1] == '2'): #Check 1 for white
+
+            
+
+            new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 1) #1 Square ahead of the pawn
+            new_piece_position_2 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 2) #2 Square ahead of the pawn
+
+            if new_piece_position_1 not in piece_position_table and new_piece_position_2 not in piece_position_table: #Check 2 for white
+                legalMoves.extend([new_piece_position_1 , new_piece_position_2])
+            elif new_piece_position_1 not in piece_position_table and new_piece_position_2 in piece_position_table:  
+                legalMoves.append(new_piece_position_1)
+            else:
+                pass
+        elif selected_piece[1] == 'd' and selected_piece_position[1] == '7': #Check 1 for black
+            new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 1) #1 Square ahead of the pawn
+            new_piece_position_2 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 2) #2 Square ahead of the pawn
+
+            if new_piece_position_1 not in piece_position_table and new_piece_position_2 not in piece_position_table: #Check 2 for white
+                legalMoves.extend([new_piece_position_1 , new_piece_position_2])
+            elif new_piece_position_1 not in piece_position_table and new_piece_position_2 in piece_position_table:  
+                legalMoves.append(new_piece_position_1)
+            else:
+                pass
+        else:
+            if selected_piece[1] == 'd':   
+                print('run')
+                new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 1) #1 Square ahead of the pawn for black
+                if new_piece_position_1 not in piece_position_table:
+                    print(new_piece_position_1)
+                    legalMoves.append(new_piece_position_1)
+                else:
+                    pass
+            elif selected_piece[1] == 'l':   
+                new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 1) #1 Square ahead of the pawn for white
+                if new_piece_position_1 not in piece_position_table:
+                    legalMoves.append(new_piece_position_1)
+                else:
+                    pass
+        '''
+        To implement capture we just thave to check the top right position and top left and if it has a piece it will be a legal move
+        '''
+        if selected_piece[1] == 'l': #for white
+            new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) + 1)) #top right
+            new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) + 1)) #top left
+            if new_piece_position_r in piece_position_table:
+                legalMoves.append(new_piece_position_r)
+            if new_piece_position_l in piece_position_table:
+                legalMoves.append(new_piece_position_l)
+
+        elif selected_piece[1] == "d": #for black
+            new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) - 1)) #bottom right
+            new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) - 1)) #bottom left
+            if new_piece_position_r in piece_position_table:
+                legalMoves.append(new_piece_position_r)
+            if new_piece_position_l in piece_position_table:
+                legalMoves.append(new_piece_position_l)
+        
+        '''if selected_piece[1] == 'l' and selected_piece_position[1] == '8':
+            legalMoves.append(f"promotion/{selected_piece}/{selected_piece_position}")
+        elif selected_piece[1] == 'd' and selected_piece_position[1] == '1':
+            legalMoves.append(f"promotion/{selected_piece}/{selected_piece_position}")'''
+        
+                
 
 
     return sorted(legalMoves)
