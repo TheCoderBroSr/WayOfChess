@@ -255,9 +255,11 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
             new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) + 1)) #top right
             new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) + 1)) #top left
             if new_piece_position_r in piece_position_table:
-                legalMoves.append(new_piece_position_r)
+                if piece_position_table[new_piece_position_r][1] != selected_piece[1]:
+                    legalMoves.append(new_piece_position_r)
             if new_piece_position_l in piece_position_table:
-                legalMoves.append(new_piece_position_l)
+                if piece_position_table[new_piece_position_l][1] != selected_piece[1]:
+                    legalMoves.append(new_piece_position_l)
 
         elif selected_piece[1] == "d": #for black
             new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) - 1)) #bottom right
@@ -303,9 +305,133 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         knight_check(new_piece_position_1D_2R)
         knight_check(new_piece_position_1D_2L)
 
+    if selected_piece[0] == 'q':
+        pointer_east = pointer_west = pointer_north = pointer_south = 0 #Initial Pointer Position
+        east_f = west_f = north_f = south_f = True
+        while east_f or west_f or north_f or south_f:
+            if east_f:
+                pointer_east += 1 #Moving 1 step left
+                new_piece_position =  chr(int(ord(column)) - pointer_east) + row #Moving across a row , column changes and row is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    east_f = False
+                    continue
+                if new_piece_position not in piece_position_table: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        east_f = False
+                    else:
+                        east_f = False
+            if west_f:
+                pointer_west += 1
+                new_piece_position =  chr(int(ord(column)) + pointer_west) + row    #Moving across a row , column changes and row is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    west_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        west_f = False
+                    else:
+                        west_f = False
+            if north_f:
+                pointer_north += 1
+                new_piece_position = column + str(pointer_north+ int(selected_piece_position[1])) #Moving across a column , row changes and column is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    north_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_f = False
+                    else:
+                        north_f = False
+                
+            if south_f:
+                pointer_south += 1
+                new_piece_position = column + str(int(selected_piece_position[1]) - pointer_south) #Moving across a column , row changes and column is constant
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_f = False
+                    else:
+                        south_f = False
 
+        north_west_f = north_east_f = south_east_f = south_west_f = True
+        pointer_north_west_f = pointer_north_east_f = pointer_south_east_f = pointer_south_west_f = 0
+
+        while north_east_f or north_west_f or south_east_f or south_west_f: 
+            if north_east_f:
+                pointer_north_east_f += 1
+                new_piece_position = chr(int((ord(column)) + pointer_north_east_f)) + str((int(row) + pointer_north_east_f)) #To move in NE direction our pointer moves +1 position in both column and row
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I': #This code checks that if the piece has moved to a position outside the respective directional loop will stop
+                    north_east_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_east_f = False
+                    else:
+                        north_east_f = False
+            
+            if north_west_f:
+                pointer_north_west_f += 1
+                new_piece_position = chr(int((ord(column)) - pointer_north_west_f)) + str((int(row) + pointer_north_west_f)) #To move in NW direction our pointer moves -1 position in column and +1 in row
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    north_west_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        north_west_f = False
+                    else:
+                        north_west_f = False
+            
+            if south_east_f:
+                pointer_south_east_f += 1
+                new_piece_position = chr(int((ord(column)) - pointer_south_east_f)) + str((int(row) - pointer_south_east_f)) #To move in SE direction our pointer moves +1 position in column and -1 in row 
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_east_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_east_f = False
+                    else:
+                        south_east_f = False
+            
+            if south_west_f:
+                pointer_south_west_f += 1
+                new_piece_position = chr(int((ord(column)) + pointer_south_west_f)) + str((int(row) - pointer_south_west_f)) #To move in SW direction our pointer moves -1 position in column and -1 in row 
+                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                    south_west_f = False
+                    continue
+                if new_piece_position not in piece_position_table:
+                    legalMoves.append(new_piece_position)
+                else:
+                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                        legalMoves.append(new_piece_position)
+                        south_west_f = False
+                    else:
+                        south_west_f = False
+        
     return sorted(legalMoves)
-
 
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
