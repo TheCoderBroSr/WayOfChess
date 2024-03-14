@@ -273,9 +273,39 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
             legalMoves.append(f"promotion/{selected_piece}/{selected_piece_position}")'''
         
                 
+    if selected_piece[0] == 'n':
+
+        'Knight can move in 8 directions'
+        new_piece_position_2U_1R = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) + 2)) #Up 2 spaces and 1 right
+        new_piece_position_2U_1L = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) + 2)) #
+        new_piece_position_2D_1R = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) - 2)) #
+        new_piece_position_2D_1L = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) - 2)) #
+        new_piece_position_1U_2R = (chr(int(ord(selected_piece_position[0])) + 2) + str(int(selected_piece_position[1]) + 1)) #
+        new_piece_position_1U_2L = (chr(int(ord(selected_piece_position[0])) - 2) + str(int(selected_piece_position[1]) + 1)) #
+        new_piece_position_1D_2R = (chr(int(ord(selected_piece_position[0])) + 2) + str(int(selected_piece_position[1]) - 1)) #
+        new_piece_position_1D_2L = (chr(int(ord(selected_piece_position[0])) - 2) + str(int(selected_piece_position[1]) - 1)) #
+
+        def knight_check(pos):
+            print(pos)
+            if pos in piece_position_table:
+                if piece_position_table[pos][1] != selected_piece[1]:
+                   legalMoves.append(pos)
+            else:
+                if int(ord(pos[0])) >= 65 and int(ord(pos[0])) <= 72 and pos[1] != '-' and int(pos[1]) >= 1 and int(pos[1]) <= 8:
+                    legalMoves.append(pos)
+        #Running check function for all 8 directions
+        knight_check(new_piece_position_2U_1R)
+        knight_check(new_piece_position_2U_1L)
+        knight_check(new_piece_position_2D_1R)
+        knight_check(new_piece_position_2D_1L)
+        knight_check(new_piece_position_1U_2R)
+        knight_check(new_piece_position_1U_2L)
+        knight_check(new_piece_position_1D_2R)
+        knight_check(new_piece_position_1D_2L)
 
 
     return sorted(legalMoves)
+
 
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
