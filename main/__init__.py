@@ -1,3 +1,4 @@
+from . import moves
 import os
 import json
 
@@ -27,8 +28,8 @@ def create_app(test_config=None):
         pass
 
     APP_URL = 'http://127.0.0.1:5000'
+    START_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' # FEN str for starting position
 
-    from . import moves
 
     @app.route('/', methods=('GET', 'POST'))
     def index():
@@ -43,27 +44,24 @@ def create_app(test_config=None):
         l -> light(white)
         d -> dark(black)
         '''
+        global piece_position_table
+        piece_position_table = moves.read_FEN(START_POSITION)
         
-        start_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' # FEN str for starting position
-        global piece_position
 
-        piece_position = moves.read_FEN(start_position) # FEN -> Game Notation
         if request.method == "POST" and 'reset' in request.form:
-            piece_position = moves.read_FEN(start_position)
+            piece_position_table = moves.read_FEN(START_POSITION)
 
         elif request.method == "POST" and 'set' in request.form:
             custom_position = request.form['fen_position']
 
             # Implement valid FEN string check
             try:
-                piece_position = moves.read_FEN(custom_position)
+                piece_position_table = moves.read_FEN(custom_position)
             except:
                 flash('Invalid FEN string')
-        elif request.method == "POST":
-            print(request.json)
 
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('index.html', piece_position=piece_position, app_url=APP_URL)
+        return render_template('index.html', piece_position_table=piece_position_table, app_url=APP_URL)
 
     @app.route('/process_move', methods=['POST'])
     def process_move():
@@ -71,7 +69,7 @@ def create_app(test_config=None):
         selected_piece = piece_data['selected_piece']
         selected_piece_position = piece_data['selected_piece_position']
 
-        legal_moves = moves.legal_moves(piece_position, selected_piece, selected_piece_position)
+        legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position)
 
         response_data = {'legal_moves': legal_moves}
         return jsonify(response_data), 200

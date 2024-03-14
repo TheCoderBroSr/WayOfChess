@@ -22,8 +22,8 @@
                 {% set j = 'ABCDEFGH'[j] %}
                 <div class="box" id="{{ j }}">
                     {% set i = i | string() %}
-                    {% if j + i in piece_position.keys() %}
-                        {% set piece_type = piece_position[j + i] %}
+                    {% if j + i in piece_position_table.keys() %}
+                        {% set piece_type = piece_position_table[j + i] %}
                         {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
                         <img src="{{ url_for('static', filename=file_path) }}" alt="">
                     {% endif %}
@@ -101,7 +101,7 @@
                 selected_piece_position: box.id + row.id
             }
             
-            request.open("POST", "{{app_url}}/process_move");
+            request.open("POST", "{{session['app_url']}}/process_move");
             request.setRequestHeader('Content-Type', 'application/json');
             request.send(JSON.stringify(piece_data));
         }
