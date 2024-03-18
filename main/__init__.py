@@ -90,7 +90,7 @@ def create_app(test_config=None):
             response_data = {'legal_moves': legal_moves}
             
             return jsonify(response_data), 210
-        
+                
         if piece_data['data'] == 'target_data':
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
