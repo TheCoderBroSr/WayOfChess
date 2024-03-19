@@ -69,8 +69,9 @@ def create_app(test_config=None):
     def process_move():
         '''
         Custom HTTP Status Codes
-        210 -> Successful selected_piece info received
-        211 -> SUccessful piece movement/capture
+        240 -> Successfully received selected_piece info
+        241 -> Legal piece move made
+        441 -> Illegal piece move made
         '''
         piece_data = request.json
 
@@ -85,21 +86,35 @@ def create_app(test_config=None):
         if piece_data['data'] == 'initial_data':
             session['selected_piece'] = piece_data['selected_piece']
             session['selected_piece_position'] = piece_data['selected_piece_position']         
-            
+
             legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position'])
             response_data = {'legal_moves': legal_moves}
             
-            return jsonify(response_data), 210
+            status_code = 210
+
+            return jsonify(response_data), status_code
         
         if piece_data['data'] == 'target_data':
+            selected_piece = session['selected_piece']
+            selected_piece_position = session['selected_piece_position']
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
-            
-            piece_position_table[target_position] = session['selected_piece']
-            del piece_position_table[session['selected_piece_position']]
+
+            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position)
+
+            if target_position not in selected_piece_legal_moves:
+                status_code = 221 # error illegal move
+                response_data = {'msg-type': 'error', 'msg':'illegal move made'}
+            else:
+                status_code = 211 # legal capture
+                piece_position_table[target_position] = selected_piece
+                del piece_position_table[selected_piece_position]
+                response_data = {'msg-type': 'success', 'msg': 'legal move made'}
 
             session['piece_position_table'] = piece_position_table
+            session['selected_piece'] = None
+            session['selected_piece_position'] = None
 
-            return jsonify({'piece_position_table': session['piece_position_table']}), 211
+            return jsonify(response_data), status_code
         
     return app
