@@ -499,11 +499,10 @@ def in_check(piece_position_table:dict, player:str) -> bool:
     return False
 
 def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
-    selected_piece_type, selected_piece_colour = selected_piece
-
-    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
-
+    selected_piece_colour = selected_piece[1]
     legal_moves = []
+    
+    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
