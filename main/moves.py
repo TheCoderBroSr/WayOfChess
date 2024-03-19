@@ -51,6 +51,32 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
     column = selected_piece_position[0] #A-H
     row = selected_piece_position[1] #1-8
     legalMoves = []
+
+    def square_check(new_piece_position : str) -> str:
+        '''
+        For each piece we will run a certain pointer in a certain direction with certain rules. Each time a pointer changes its position
+        in the chess board there will be 4 possible cases
+        -> The square is outside the board. #case 1 -> 'OB' (Out of bounds)
+
+        There is a piece on the square
+            -> There is a piece on the square of oppposite colour. #case 2 -> 'oppositeColor'
+            -> There is a piece on the square of the same colour. #check 3 -> 'sameColor'
+        -> There is no piece on that square. #check 4 -> noPiece
+        '''
+        if  'A' <= new_piece_position[0] <= 'H'   and '1' <= new_piece_position[1] <= '8': 
+            if new_piece_position in piece_position_table:
+                if piece_position_table[new_piece_position][1] == selected_piece[1]:
+                    return 'sameColor' #case 3
+                else:
+                    return 'oppositeColor' #case 2
+            else:
+                return 'noPiece' #case 4
+        else:
+            return 'OB' #Case 1
+            
+                
+                    
+
     if selected_piece[0] == 'r': #Defining Rules for rook ('r')
         '''
         To check all legal moves for a rook we will:-
@@ -67,66 +93,74 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         '''
 
         pointer_east = pointer_west = pointer_north = pointer_south = 0 #Initial Pointer Position
-
         east_f = west_f = north_f = south_f = True
+
         while east_f or west_f or north_f or south_f:
             if east_f:
                 pointer_east += 1 #Moving 1 step left
                 new_piece_position =  chr(int(ord(column)) - pointer_east) + row #Moving across a row , column changes and row is constant
-                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                if square_check(new_piece_position) == 'OB':
                     east_f = False
                     continue
-                if new_piece_position not in piece_position_table: #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
+                if square_check(new_piece_position) == 'noPiece': #If there is no piece in the current position of pointer, that square won't exist in the piece position dictionary
                     legalMoves.append(new_piece_position)
                 else:
-                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                    if square_check(new_piece_position) == 'oppositeColor': #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
                         legalMoves.append(new_piece_position)
                         east_f = False
-                    else:
+                    elif square_check(new_piece_position) == 'sameColor':
                         east_f = False
+                    else:
+                        return 'pawn edge case error'
             if west_f:
                 pointer_west += 1
-                new_piece_position =  chr(int(ord(column)) + pointer_west) + row    #Moving across a row , column changes and row is constant
-                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                new_piece_position =  chr(int(ord(column)) + pointer_west) + row #Moving across a row , column changes and row is constant
+                if square_check(new_piece_position) == 'OB':
                     west_f = False
                     continue
-                if new_piece_position not in piece_position_table:
+                if square_check(new_piece_position) == 'noPiece':
                     legalMoves.append(new_piece_position)
                 else:
-                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                    if square_check(new_piece_position) == 'oppositeColor': #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
                         legalMoves.append(new_piece_position)
                         west_f = False
-                    else:
+                    elif square_check(new_piece_position) == 'sameColor':
                         west_f = False
+                    else:
+                        return 'pawn edge case error'
             if north_f:
                 pointer_north += 1
                 new_piece_position = column + str(pointer_north+ int(selected_piece_position[1])) #Moving across a column , row changes and column is constant
-                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                if square_check(new_piece_position) == 'OB':
                     north_f = False
                     continue
-                if new_piece_position not in piece_position_table:
+                if square_check(new_piece_position) == 'noPiece':
                     legalMoves.append(new_piece_position)
                 else:
-                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                    if square_check(new_piece_position) == 'oppositeColor': #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
                         legalMoves.append(new_piece_position)
                         north_f = False
-                    else:
+                    elif square_check(new_piece_position) == 'sameColor':
                         north_f = False
+                    else:
+                        return 'pawn edge case error'
                 
             if south_f:
                 pointer_south += 1
                 new_piece_position = column + str(int(selected_piece_position[1]) - pointer_south) #Moving across a column , row changes and column is constant
-                if new_piece_position[1]=='0' or new_piece_position[1]=='9' or new_piece_position[0]=='@' or new_piece_position[0]=='I':
+                if square_check(new_piece_position) == 'OB':
                     south_f = False
                     continue
-                if new_piece_position not in piece_position_table:
+                if square_check(new_piece_position) == 'noPiece':
                     legalMoves.append(new_piece_position)
                 else:
-                    if piece_position_table[new_piece_position][1] != selected_piece[1]: #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
+                    if square_check(new_piece_position) == 'oppositeColor': #Checks if the new piece positions's piece is not the same color as the originial piece (2 pieces of the same colour cannot capture each other)
                         legalMoves.append(new_piece_position)
                         south_f = False
-                    else:
+                    elif square_check(new_piece_position) == 'sameColor':
                         south_f = False
+                    else:
+                        return 'pawn edge case error'
                 
 
     if selected_piece[0] == 'b': #Defining rules of bishop ('b')
@@ -209,17 +243,14 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         ->if white pawn is on 5th row and opposing pawn moves to adjacent left or right positions en passent is activated.
         '''
 
-        print(selected_piece , selected_piece_position)
         if (selected_piece[1] == 'l' and selected_piece_position[1] == '2'): #Check 1 for white
-
             
-
             new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 1) #1 Square ahead of the pawn
             new_piece_position_2 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 2) #2 Square ahead of the pawn
 
-            if new_piece_position_1 not in piece_position_table and new_piece_position_2 not in piece_position_table: #Check 2 for white
+            if square_check(new_piece_position_1) == 'noPiece' and square_check(new_piece_position_2) == 'noPiece': #Check 2 for white
                 legalMoves.extend([new_piece_position_1 , new_piece_position_2])
-            elif new_piece_position_1 not in piece_position_table and new_piece_position_2 in piece_position_table:  
+            elif square_check(new_piece_position_1) == 'noPiece' and new_piece_position_2 in piece_position_table:  
                 legalMoves.append(new_piece_position_1)
             else:
                 pass
@@ -227,24 +258,22 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
             new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 1) #1 Square ahead of the pawn
             new_piece_position_2 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 2) #2 Square ahead of the pawn
 
-            if new_piece_position_1 not in piece_position_table and new_piece_position_2 not in piece_position_table: #Check 2 for white
+            if square_check(new_piece_position_1) == 'noPiece' and square_check(new_piece_position_2) == 'noPiece': #Check 2 for white
                 legalMoves.extend([new_piece_position_1 , new_piece_position_2])
-            elif new_piece_position_1 not in piece_position_table and new_piece_position_2 in piece_position_table:  
+            elif square_check(new_piece_position_1) == 'noPiece' and new_piece_position_2 in piece_position_table:  
                 legalMoves.append(new_piece_position_1)
             else:
                 pass
         else:
             if selected_piece[1] == 'd':   
-                print('run')
                 new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) - 1) #1 Square ahead of the pawn for black
-                if new_piece_position_1 not in piece_position_table:
-                    print(new_piece_position_1)
+                if square_check(new_piece_position_1) == 'noPiece':
                     legalMoves.append(new_piece_position_1)
                 else:
                     pass
             elif selected_piece[1] == 'l':   
                 new_piece_position_1 = selected_piece_position[0] + str(int(selected_piece_position[1]) + 1) #1 Square ahead of the pawn for white
-                if new_piece_position_1 not in piece_position_table:
+                if square_check(new_piece_position_1) == 'noPiece':
                     legalMoves.append(new_piece_position_1)
                 else:
                     pass
@@ -254,21 +283,17 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         if selected_piece[1] == 'l': #for white
             new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) + 1)) #top right
             new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) + 1)) #top left
-            if new_piece_position_r in piece_position_table:
-                if piece_position_table[new_piece_position_r][1] != selected_piece[1]:
-                    legalMoves.append(new_piece_position_r)
-            if new_piece_position_l in piece_position_table:
-                if piece_position_table[new_piece_position_l][1] != selected_piece[1]:
+            if square_check(new_piece_position_r) == 'oppositeColor':
+                legalMoves.append(new_piece_position_r)
+            if square_check(new_piece_position_l) == 'oppositeColor':
                     legalMoves.append(new_piece_position_l)
 
         elif selected_piece[1] == "d": #for black
             new_piece_position_r = (chr(int(ord(selected_piece_position[0])) + 1) + str(int(selected_piece_position[1]) - 1)) #bottom right
             new_piece_position_l = (chr(int(ord(selected_piece_position[0])) - 1) + str(int(selected_piece_position[1]) - 1)) #bottom left
-            if new_piece_position_r in piece_position_table:
-                if piece_position_table[new_piece_position_r][1] != selected_piece[1]:
-                    legalMoves.append(new_piece_position_r)
-            if new_piece_position_l in piece_position_table:
-                if piece_position_table[new_piece_position_l][1] != selected_piece[1]:
+            if square_check(new_piece_position_r) == 'oppositeColor':
+                legalMoves.append(new_piece_position_r)
+            if square_check(new_piece_position_l) == 'oppositeColor':
                     legalMoves.append(new_piece_position_l)
         
         '''if selected_piece[1] == 'l' and selected_piece_position[1] == '8':
@@ -434,6 +459,19 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
                         south_west_f = False
         
     return sorted(legalMoves)
+
+def check(piece_position_table , turn):
+    #for white
+    if turn == 'w':
+        legalMoves = []
+        for i in piece_position_table:
+            print(piece_position_table)
+            print(legalMoves , piece_position_table.get(('kd')))
+            legalMoves.extend(legal_moves(piece_position_table ,piece_position_table[i], i))
+            if list(piece_position_table.keys())[list(piece_position_table.values()).index('kd')] in legalMoves:
+                print('check of black king')
+
+
 
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
