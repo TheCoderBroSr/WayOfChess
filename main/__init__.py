@@ -106,9 +106,9 @@ def create_app(test_config=None):
                 status_code = 221 # error illegal move
                 response_data = {'msg-type': 'error', 'msg':'illegal move made'}
             else:
+                moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+
                 status_code = 211 # legal capture
-                piece_position_table[target_position] = selected_piece
-                del piece_position_table[selected_piece_position]
                 response_data = {'msg-type': 'success', 'msg': 'legal move made'}
 
             session['piece_position_table'] = piece_position_table
