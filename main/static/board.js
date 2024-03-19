@@ -1,28 +1,44 @@
 let init_box, target_box, legal_moves;
-const request = new XMLHttpRequest();
-    
-request.onreadystatechange = function() {
-    if (request.readyState === XMLHttpRequest.DONE) {
-        if (request.status === 210) {
-            response = JSON.parse(request.responseText);
+const request_initial = new XMLHttpRequest();
+const request_target = new XMLHttpRequest();
+
+request_initial.onreadystatechange = function() {
+    if (request_initial.readyState === XMLHttpRequest.DONE) {
+        if (request_initial.status === 210) {
+            response = JSON.parse(request_initial.responseText);
 
             legal_moves = response.legal_moves;
             console.log(legal_moves);
 
             toggle_legal_moves_box(legal_moves);
 
-        } else if (request.status === 211) {
+        } else {
+            console.error('Error:', request_initial.status);
+        }
+    }
+}
+
+request_target.onreadystatechange = function() {
+    if (request_target.readyState === XMLHttpRequest.DONE) {
+        if (request_target.status === 211) {
             update_target_box_element(init_box, target_box);
             
             target_box = undefined;
             init_box = undefined;
+    
+            toggle_legal_moves_box(legal_moves);
+    
+            legal_moves = undefined;
+        } else if (request_target.status === 221) {
+            target_box = undefined;
+            init_box = undefined;
 
             toggle_legal_moves_box(legal_moves);
-
+    
             legal_moves = undefined;
-            
+
         } else {
-            console.error('Error:', request.status);
+            console.error('Error:', request_target.status);
         }
     }
 }
@@ -50,7 +66,7 @@ window.onclick = e => {
         init_box = box;
         init_box.classList.toggle('active');
         
-        send_initial_piece_data(request, url, piece_type, row, box);
+        send_initial_piece_data(request_initial, url, piece_type, row, box);
 
         console.log('Piece type: ' + piece_type);
         console.log(box.id + row.id);
@@ -68,13 +84,9 @@ window.onclick = e => {
         init_box.classList.remove('active');
         console.log('Target Box:', box.id + row.id);
 
-        if (piece_type) {
-            target_piece_type = piece_type.slice(6,8);
-        } else {
-            target_piece_type = '';
-        }
+        target_piece_type = piece_type ? piece_type.slice(6,8):'';
 
-        send_target_box_data(request, url, target_piece_type, row, box);      
+        send_target_box_data(request_target, url, target_piece_type, row, box);      
     }
 }
 
@@ -132,6 +144,4 @@ function update_target_box_element(init_box, target_box) {
         target_box.appendChild(piece);
         init_box.removeChild(init_box.firstElementChild);
     }
-    
-    console.log(init_box, target_box);
 }
