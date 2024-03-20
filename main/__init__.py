@@ -69,9 +69,9 @@ def create_app(test_config=None):
     def process_move():
         '''
         Custom HTTP Status Codes
-        240 -> Successfully received selected_piece info
-        241 -> Legal piece move made
-        441 -> Illegal piece move made
+        210 -> Successfully received selected_piece info
+        211 -> Legal piece move made
+        221 -> Illegal piece move made
         '''
         piece_data = request.json
 
