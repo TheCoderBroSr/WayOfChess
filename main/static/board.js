@@ -44,22 +44,28 @@ request_target.onreadystatechange = function() {
 }
 
 window.onclick = e => {
-    let box, row, piece_type;
+    let box, piece_type;
 
     if (e.target.tagName == "IMG") {// checks if selected square has an piece
         let img = e.target;
         box = img.parentNode;
-        row = box.parentNode;
         
         let img_path = img.src.split('/');
         piece_type = img_path.at(-1);
         
     } else if(e.target.classList.contains("box")) { // checks if selected square is empty
         box = e.target; 
-        row = box.parentNode;
+    } else if(e.target.classList.contains("file-index") || e.target.classList.contains("rank-index")) {
+        box = e.target.parentNode;
+
+        let img = box.querySelector('img') !== null ? box.querySelector('img') : undefined;
+        let img_path = img ? img.src.split('/') : undefined;
+        piece_type = img_path ? img_path.at(-1) : undefined;
     } else { // Anything clicked apart from the board is ignored
         return -1;
     }
+
+    let row = box ? box.parentNode:undefined;
     
     if (box && row && !init_box && piece_type) {
         // Valid position and position contains a piece, define initial piece if it doesn't exist
@@ -134,14 +140,14 @@ function toggle_legal_moves_box(legal_moves) {
 }
 
 function update_target_box_element(init_box, target_box) {
-    if (target_box.children.length == 1) {
-        target_box.firstElementChild.src = init_box.firstElementChild.src;
-        init_box.firstElementChild.src = '';
+    if (target_box.querySelector('img') !== null) {
+        target_box.querySelector('img').src = init_box.querySelector('img').src;
+        init_box.querySelector('img').src = '';
     } else {
-        var piece = document.createElement("img");
-        piece.src = init_box.firstElementChild.src;
+        var piece = document.createElement('img');
+        piece.src = init_box.querySelector('img').src;
         
         target_box.appendChild(piece);
-        init_box.removeChild(init_box.firstElementChild);
+        init_box.removeChild(init_box.querySelector('img'));
     }
 }

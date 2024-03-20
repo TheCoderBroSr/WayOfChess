@@ -25,6 +25,12 @@
                 {% set j = 'ABCDEFGH'[j] %}
                 <div class="box" id="{{ j }}">
                     {% set i = i | string() %}
+                    {% if i == '1' %}
+                        <div class="file-index">{{ j }}</div>
+                    {% endif %}
+                    {% if j == 'A' %}
+                        <div class="rank-index">{{ i }}</div>
+                    {% endif %}
                     {% if j + i in piece_position_table.keys() %}
                         {% set piece_type = piece_position_table[j + i] %}
                         {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
