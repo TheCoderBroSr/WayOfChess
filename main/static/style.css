@@ -105,24 +105,54 @@ body {
 .chessboard .row .box{
     width: var(--chess-box-width);
     height: var(--chess-box-width);
-    background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color)) ;    
-}
-
-.chessboard .row .active {
-    box-shadow: 0 0 2px 1px #EAEAEA inset;
-}
-
-.chessboard .row .box img {
-    width: var(--chess-box-width);
-    cursor: grab;
+    position: relative;
+    color: var(--dark-blue-color);
+    background: linear-gradient(180deg, var(--dark-bg-color), var(--light-bg-color));  
 }
 
 .chessboard .row .legal {
     background: linear-gradient(45deg, var(--dark-green-color), var(--light-green-color));
 }
 
+
+.chessboard .row .active {
+    box-shadow: 0 0 2px 1px #EAEAEA inset;
+}
+
+.chessboard .row .box .file-index, .rank-index {
+    position: absolute;
+    font-weight: bolder;
+}
+
+.chessboard .row .box .file-index {
+    right: 2px;
+    bottom: 2px;
+}
+
+.chessboard .row .box .rank-index {
+    left: 2px;
+    top: 2px;
+}
+
+.chessboard .row .box img {
+    width: var(--chess-box-width);
+}
+
+.chessboard .row .box:has(img) {
+    cursor: grab;  
+}
+
+.chessboard .row .box:not(.box:has(img)) .file-index, 
+.chessboard .row .box:not(.box:has(img)) .rank-index {
+    cursor: default;
+}
+
 .chessboard .row:nth-child(even) .box:nth-child(odd):not(.legal),
 .chessboard .row:nth-child(odd) .box:nth-child(even):not(.legal) {
-    /* background: var(--light-blue-color);     */
     background: linear-gradient(180deg, var(--dark-blue-color), var(--light-blue-color));
+}
+
+.chessboard .row:nth-child(even) .box:first-child:not(.legal),
+.chessboard .row:last-child .box:nth-child(odd):not(.legal) {
+    color: var(--dark-bg-color);
 }
