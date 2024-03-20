@@ -86,7 +86,6 @@ def create_app(test_config=None):
         if piece_data['data'] == 'initial_data':
             session['selected_piece'] = piece_data['selected_piece']
             session['selected_piece_position'] = piece_data['selected_piece_position']         
-
             legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position'])
             response_data = {'legal_moves': legal_moves}
             

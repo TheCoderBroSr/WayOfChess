@@ -458,7 +458,26 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
                         south_west_f = False
                     else:
                         south_west_f = False
+    
+    if selected_piece[0] == 'k':
+        #8 Pointers for each direction the king can move
         
+        pointer_N = chr(ord(selected_piece_position[0]) + 0) + str(int(selected_piece_position[1]) + 1)
+        pointer_NE = chr(ord(selected_piece_position[0]) + 1) + str(int(selected_piece_position[1]) + 1)
+        pointer_E = chr(ord(selected_piece_position[0]) + 1) + str(int(selected_piece_position[1]) + 0)
+        pointer_SE = chr(ord(selected_piece_position[0]) + 1) + str(int(selected_piece_position[1]) - 1)
+        pointer_S = chr(ord(selected_piece_position[0]) + 0) + str(int(selected_piece_position[1]) - 1)
+        pointer_SW = chr(ord(selected_piece_position[0]) -1) + str(int(selected_piece_position[1]) - 1)
+        pointer_W = chr(ord(selected_piece_position[0]) - 1) + str(int(selected_piece_position[1]) + 0)
+        pointer_NW = chr(ord(selected_piece_position[0]) -1) + str(int(selected_piece_position[1]) + 1)
+        
+        directions = [pointer_N , pointer_NE , pointer_E , pointer_SE , pointer_S , pointer_SW , pointer_W , pointer_NW]
+
+        for i in directions:
+            if square_check(i) == 'oppositeColor':  
+                piece_moves.append(i)
+            if square_check(i) == 'noPiece':
+                piece_moves.append(i)
     return sorted(piece_moves)
 
 def update_board(piece_position_table:dict, selected_piece:str, selected_piece_position:str, target_position:str):
