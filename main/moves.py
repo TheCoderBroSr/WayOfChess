@@ -43,7 +43,7 @@ eg:
 
 '''
 
-def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
+def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , target_pos = None) -> list:
     '''
     Returns all possible piece moves excluding friendly piece captures
     '''
@@ -478,7 +478,27 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
                 piece_moves.append(i)
             if square_check(i) == 'noPiece':
                 piece_moves.append(i)
+        #Castling
+                
+        #if simulate_check(piece_position_table ,'G1' , 'l') == 'False' and 'F1' in piece_moves:
+        #    legal_moves.append('G1')
+        #print(simulate_check(piece_position_table , 'G1' , 'l'))
+
+        if not simulate_check(piece_position_table ,  'G1' , 'l'):
+                if 'G1' not in piece_position_table and 'F1' not in piece_position_table: 
+                    piece_moves.append('G1')
+        if target_pos != None:
+            #King side castle for white
+            if target_pos == 'G1' and 'G1' in piece_moves:
+                temp_piece_position_table = piece_position_table.copy() 
+                print(temp_piece_position_table)
+                update_board(temp_piece_position_table , 'kl' , 'E1' , 'G1')
+                temp_piece_position_table = piece_position_table.copy()
+                update_board(temp_piece_position_table , 'rl' , 'H1' , 'F1')
+
     return sorted(piece_moves)
+
+
 
 def update_board(piece_position_table:dict, selected_piece:str, selected_piece_position:str, target_position:str):
     '''
@@ -499,6 +519,21 @@ def get_piece_position(piece_position_table, search_piece):
     for position, piece in piece_position_table.items():
         if piece == search_piece:
             return position
+        
+def simulate_check(piece_position_table ,player_position:str , player:str) -> bool:
+    if player == 'l':
+        enemy = 'd'
+    else:
+        enemy = 'l'
+
+    print(f'player position {player_position}')
+    for position, piece in piece_position_table.items():
+        if piece[1] == enemy: # get enemy pieces 
+            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position)
+            if player_position in enemy_piece_legal_moves:
+                return True
+            
+    return False
 
 def in_check(piece_position_table:dict, player:str) -> bool:
     if player == 'l':
@@ -517,11 +552,11 @@ def in_check(piece_position_table:dict, player:str) -> bool:
             
     return False
 
-def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
+def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , target_position = None) -> list:
     selected_piece_colour = selected_piece[1]
     legal_moves = []
     
-    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
+    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position , target_pos=target_position)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
