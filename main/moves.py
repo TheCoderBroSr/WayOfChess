@@ -42,16 +42,43 @@ eg:
  'A1': 'rl', 'B1': 'nl', 'C1': 'bl', 'D1': 'ql', 'E1': 'kl', 'F1': 'bl', 'G1': 'nl', 'H1': 'rl'}
 
 '''
+def token_generator(board_position : str) -> int:
+    char , row_number = board_position
+    row_number = int(row_number)
+    multuplier = 10
+    token = (ord(char) - 65) + ((row_number- 1) * multuplier) - 2*(row_number - 1) + 1
+    return token
 
-def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , target_pos = None) -> list:
+def generate_square(token: int) -> str:
+    if 1 <= token <= 64:
+        row = (token - 1) // 8
+        col = (token - 1) % 8
+        file_letter = chr(ord('A') + col)
+        rank_number = row +1
+        return f"{file_letter}{rank_number}"
+            
+
+def token_piece_position_table_gen(piece_position_table):
+    table = {}
+    for key , val in piece_position_table.items():
+        table[token_generator(key)] = val
+    return table
+
+def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
     '''
     Returns all possible piece moves excluding friendly piece captures
     '''
-    #Defining Row and Column of Piece
 
+    class pieces:
+        class bishop:
+            directionalOffset = [9 , -9 , -7 , 7]
+
+    #Defining Row and Column of Piece
+    piece , piece_colour = selected_piece
     column = selected_piece_position[0] #A-H
     row = selected_piece_position[1] #1-8
     piece_moves = []
+    token_piece_position_table = token_piece_position_table_gen(piece_position_table)
 
     def square_check(new_piece_position : str) -> str:
         '''
@@ -162,14 +189,32 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
                         south_f = False
                     else:
                         return 'pawn edge case error'
-                
-
+    counter = 0
     if selected_piece[0] == 'b': #Defining rules of bishop ('b')
         '''
         To check all the moves of rook:
         -> Run 4 pointers in NW , NE , SE , SW
         -> If pointer reaches the edge of the board we terminate the loop
         -> We will iterate by 1 place in both directions specifies. F.E for NS direction from A8 will iterate to (A+1 ,8-1) = B7 ....
+        '''
+        offset_multiplier = 1
+        for directional_offset in pieces.bishop.directionalOffset:
+            while 1:
+                new_piece_square = token_generator(selected_piece_position) + (directional_offset * offset_multiplier)
+                print(new_piece_square)
+                if new_piece_square in list(token_piece_position_table.keys()):
+                    if token_piece_position_table[new_piece_square][1] == piece_colour:
+                        break
+                    else:
+                        piece_moves.append(generate_square(new_piece_square))
+                        offset_multiplier += 1
+                else:
+                    if 1 <= new_piece_square <= 64:
+                        piece_moves.append(generate_square(new_piece_square))
+                        offset_multiplier += 1
+                    else:
+                        break
+            print(piece_moves)
         '''
         north_west_f = north_east_f = south_east_f = south_west_f = True
         pointer_north_west_f = pointer_north_east_f = pointer_south_east_f = pointer_south_west_f = 0
@@ -234,6 +279,7 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
                         south_west_f = False
                     else:
                         south_west_f = False
+            '''
         
     if selected_piece[0] == 'p':
         '''
@@ -480,21 +526,7 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
                 piece_moves.append(i)
         #Castling
                 
-        #if simulate_check(piece_position_table ,'G1' , 'l') == 'False' and 'F1' in piece_moves:
-        #    legal_moves.append('G1')
-        #print(simulate_check(piece_position_table , 'G1' , 'l'))
 
-        if not simulate_check(piece_position_table ,  'G1' , 'l'):
-                if 'G1' not in piece_position_table and 'F1' not in piece_position_table: 
-                    piece_moves.append('G1')
-        if target_pos != None:
-            #King side castle for white
-            if target_pos == 'G1' and 'G1' in piece_moves:
-                temp_piece_position_table = piece_position_table.copy() 
-                print(temp_piece_position_table)
-                update_board(temp_piece_position_table , 'kl' , 'E1' , 'G1')
-                temp_piece_position_table = piece_position_table.copy()
-                update_board(temp_piece_position_table , 'rl' , 'H1' , 'F1')
 
     return sorted(piece_moves)
 
@@ -519,21 +551,6 @@ def get_piece_position(piece_position_table, search_piece):
     for position, piece in piece_position_table.items():
         if piece == search_piece:
             return position
-        
-def simulate_check(piece_position_table ,player_position:str , player:str) -> bool:
-    if player == 'l':
-        enemy = 'd'
-    else:
-        enemy = 'l'
-
-    print(f'player position {player_position}')
-    for position, piece in piece_position_table.items():
-        if piece[1] == enemy: # get enemy pieces 
-            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position)
-            if player_position in enemy_piece_legal_moves:
-                return True
-            
-    return False
 
 def in_check(piece_position_table:dict, player:str) -> bool:
     if player == 'l':
@@ -552,11 +569,11 @@ def in_check(piece_position_table:dict, player:str) -> bool:
             
     return False
 
-def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , target_position = None) -> list:
+def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
     selected_piece_colour = selected_piece[1]
     legal_moves = []
     
-    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position , target_pos=target_position)
+    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
