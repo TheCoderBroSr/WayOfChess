@@ -42,36 +42,102 @@ eg:
  'A1': 'rl', 'B1': 'nl', 'C1': 'bl', 'D1': 'ql', 'E1': 'kl', 'F1': 'bl', 'G1': 'nl', 'H1': 'rl'}
 '''
 
-class pieces:
-    def __init__(self) -> None:
-        directionalOffset = None
+'''
+NOTE:
+The Piece Class (and by extension all the children class like rook, pawn etc) will be representing the selected piece
+'''
 
-class rook(pieces):
-    def __init__(self) -> None:
-        super().__init__()
-        self.directionalOffset = [1 , -1 , 8 , -8]
+class Piece:
+    def __init__(self, colour, token) -> None:
+        self.directional_offset = None
+        self.capture = False
+        self.colour = colour
+        self.token = token
+        self.legal_moves = []
 
-class pawn(pieces):
-    def __init__(self) -> None:
-        super().__init__()
-        self.directionalOffset = [8 , 16 , -8 , -16 , 9 , 7 , -9 , -7]
+    def token_target_description(self, token_piece_position_table: dict, token_target_position: int) -> str:
+        '''
+        Return accordingly if target token in token_piece_position_table is empty or has a piece
+        '''
+        if token_target_position in token_piece_position_table:
+            if self.colour == token_piece_position_table[token_target_position][1]:
+                return 'sameColour'
+            else:
+                return 'diffColour'#Capturable just not by a pawn
+        
+        # else not required as return escapes early
+        if 1 <= token_target_position <= 64:
+            return 'empty'
+        else:
+            return 'outOfBounds' 
+
+    def legal_moves_generator(self, token_piece_position_table: dict):
+        '''
+        General legal moves generator for all pieces
+        Updates self.legal_moves
+        '''
+
+        for offset in self.directional_offset:
+            token_pseudo_move = self.token + offset
+            
+            token_pseudo_move_description = self.token_target_description(token_piece_position_table, token_pseudo_move)
+            if token_pseudo_move_description == 'empty' and self.capture == False:
+                self.legal_moves.append(generate_square(token_pseudo_move))
+            
+            elif token_pseudo_move_description == 'diffColour' and self.capture == True:
+                self.legal_moves.append(generate_square(token_pseudo_move))
+
+class Rook(Piece):
+    def __init__(self, colour, token) -> None:
+        super().__init__(colour, token)
+        self.directional_offset = [1 , -1 , 8 , -8]
+
+    def legal_moves_generator(self, token_piece_position_table: dict) -> list:
+        super(self.__class__, self).legal_moves_generator(token_piece_position_table)
+
+        # Add legal move changes for rook, if required
+
+        return self.legal_moves
+
+class Pawn(Piece):
+    def __init__(self, colour, token) -> None:
+        super().__init__(colour, token)
+        self.general_directional_offset = [8 , 16 , -8 , -16 , 9 , 7 , -9 , -7]
+
+        if 9 <= self.token <= 16 and self.colour == 'l':
+            self.directional_offset = self.general_directional_offset[:2]
+        elif 49 <= self.token <= 56 and self.colour == 'd':
+            self.directional_offset = self.general_directional_offset[2:4]
+        elif self.colour == 'd':
+            self.directional_offset = [self.general_directional_offset[2]]
+        elif self.colour == 'l':
+            self.directional_offset = [self.general_directional_offset[0]]
+
+
+    def legal_moves_generator(self, token_piece_position_table: dict) -> list:
+        # Add all non-captures to legal_moves
+        super(self.__class__, self).legal_moves_generator(token_piece_position_table) 
+        # Call legal_moves_generator method from the parent class i.e. Piece
+
+        self.capture = True
+
+        if self.colour == 'l':
+            self.directional_offset = self.general_directional_offset[4:6]
+        else:
+            self.directional_offset = self.general_directional_offset[6:]
+
+        # Add all captures to legal_moves
+        super(self.__class__, self).legal_moves_generator(token_piece_position_table) 
+
         self.capture = False
 
-    def legal_moves_generator(self , token_piece_position_table ,token_selected_piece_position , selected_piece, directionalOffset):
-        legal_moves = []
-        for offset in directionalOffset:
-            new_piece_square = token_selected_piece_position + offset
-            
-            if piece_validity_check(token_piece_position_table , selected_piece , new_piece_square) == 'empty' and self.capture == False:
-                legal_moves.append(generate_square(new_piece_square))
-            
-            elif piece_validity_check(token_piece_position_table , selected_piece , new_piece_square) == 'diffColour' and self.capture == True:
-                legal_moves.append(generate_square(new_piece_square))
-        return legal_moves
+        # Handle special legal moves here, for instance en passant
+
+        return self.legal_moves
         
 
-def token_generator(board_position : str) -> int:
-    char , row_number = board_position
+def token_generator(piece_position: str) -> int:
+    char, row_number = piece_position
     row_number = int(row_number)
     multuplier = 10
     token = (ord(char) - 65) + ((row_number- 1) * multuplier) - 2*(row_number - 1) + 1
@@ -88,67 +154,28 @@ def generate_square(token: int) -> str:
 
 def token_piece_position_table_gen(piece_position_table):
     table = {}
-    for key , val in piece_position_table.items():
+    for key, val in piece_position_table.items():
         table[token_generator(key)] = val
     return table
 
-def piece_validity_check(token_piece_position_table , selected_piece ,new_piece_square):
-    if new_piece_square in token_piece_position_table:
-        if token_piece_position_table[new_piece_square][1] == selected_piece[1]:
-            return 'sameColour'
-        else:
-            return 'diffColour'#Capturable just not by a pawn
-    else:
-        if 1 <= new_piece_square <= 64:
-            return 'empty'
-        else:
-            return 'outOfBounds'
-
 def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
     '''
-    Returns all possible piece moves excluding friendly piece captures
+    Returns pseudo-legal piece moves
     '''
-    piece_moves = []
     
-    piece , colour = selected_piece
-    column , row = selected_piece_position
+    piece, colour = selected_piece
 
     token_piece_position_table = token_piece_position_table_gen(piece_position_table)
     token_selected_piece_position = token_generator(selected_piece_position)
 
-    if piece == 'p':
-        
-        piece_type = pawn()
-        directionalOffset_temp = piece_type.directionalOffset
-        if row == '2' and colour == 'l':
-            directionalOffset = directionalOffset_temp[:2]
-        elif row == '7' and colour == 'd':
-            directionalOffset = directionalOffset_temp[2:4]
-        elif colour == 'd':
-            directionalOffset = [directionalOffset_temp[2]]
-        elif colour == 'l':
-            directionalOffset = [directionalOffset_temp[0]]
-        
-        piece_moves.extend(piece_type.legal_moves_generator(token_piece_position_table, token_selected_piece_position, selected_piece , directionalOffset))
-
-        piece_type.capture = True
-        if colour == 'l':
-            directionalOffset = directionalOffset_temp[4:6]
-        else: 
-            directionalOffset = directionalOffset_temp[6:8]
-        piece_moves.extend(piece_type.legal_moves_generator(token_piece_position_table, token_selected_piece_position, selected_piece , directionalOffset))
-        piece_type.capture = False
-
-       
+    if piece == 'p':        
+        piece_type = Pawn(colour, token_selected_piece_position)
 
     if piece == 'r':
-        piece_type = rook()
-        directionalOffset = piece_type.directionalOffset
+        piece_type = Rook(colour, token_selected_piece_position)
         
-
+    piece_moves = piece_type.legal_moves_generator(token_piece_position_table)
     return sorted(piece_moves)
-
-
 
 def update_board(piece_position_table:dict, selected_piece:str, selected_piece_position:str, target_position:str):
     '''
@@ -206,9 +233,10 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
 
 if __name__ == '__main__':
 #Sample values , to be changes one js python communication is active
-    piece_position_table = read_FEN('8/8/2k5/8/8/8/8/1KR5 w KQkq - 0 1')
-    selected_piece = 'kd'
+    piece_position_table = read_FEN('8/p7/1Rk5/8/8/8/8/1KR5 w KQkq - 0 1')
+    selected_piece = 'pd'
+    selected_piece_position = 'A7'
 
-    player = selected_piece[1]
+    selected_piece_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
 
-    print(in_check(piece_position_table, player))
+    print(selected_piece_moves)
