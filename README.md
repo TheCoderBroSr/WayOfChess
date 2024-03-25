@@ -6,7 +6,7 @@ A simplified [﻿chess.com](https://chess.com/) copy :)
 
 Can be accessed @ [﻿github.com/TheCoderBroSr/WayOfChess](https://github.com/TheCoderBroSr/WayOfChess) 
 
-<ins>Note:</ins> Project still in development phase
+<ins>Note:</ins> Project still in development mode
 
 ## Running the Project
 1. Clone the GitHub repo
@@ -39,7 +39,7 @@ Can be accessed @ [﻿github.com/TheCoderBroSr/WayOfChess](https://github.com/Th
 7. Finally, run the flask project using the following command:
 
    ```
-   flask --app main run
+   flask run
    ```
 
 ## Gameplay
