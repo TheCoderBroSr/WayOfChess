@@ -46,111 +46,36 @@ eg:
 NOTE:
 The Piece Class (and by extension all the children class like rook, pawn etc) will be representing the selected piece
 '''
-
-class Piece:
-    def __init__(self, colour, token) -> None:
-        self.directional_offset = None
-        self.capture = False
-        self.colour = colour
-        self.token = token
-        self.legal_moves = []
-
-    def token_target_description(self, token_piece_position_table: dict, token_target_position: int) -> str:
-        '''
-        Return accordingly if target token in token_piece_position_table is empty or has a piece
-        '''
-        if token_target_position in token_piece_position_table:
-            if self.colour == token_piece_position_table[token_target_position][1]:
-                return 'sameColour'
-            else:
-                return 'diffColour'#Capturable just not by a pawn
-        
-        # else not required as return escapes early
-        if 1 <= token_target_position <= 64:
-            return 'empty'
-        else:
-            return 'outOfBounds' 
-
-    def legal_moves_generator(self, token_piece_position_table: dict):
-        '''
-        General legal moves generator for all pieces
-        Updates self.legal_moves
-        '''
-
-        for offset in self.directional_offset:
-            token_pseudo_move = self.token + offset
-            
-            token_pseudo_move_description = self.token_target_description(token_piece_position_table, token_pseudo_move)
-            if token_pseudo_move_description == 'empty' and self.capture == False:
-                self.legal_moves.append(generate_square(token_pseudo_move))
-            
-            elif token_pseudo_move_description == 'diffColour' and self.capture == True:
-                self.legal_moves.append(generate_square(token_pseudo_move))
-
-class Rook(Piece):
-    def __init__(self, colour, token) -> None:
-        super().__init__(colour, token)
-        self.directional_offset = [1 , -1 , 8 , -8]
-
-    def legal_moves_generator(self, token_piece_position_table: dict) -> list:
-        super(self.__class__, self).legal_moves_generator(token_piece_position_table)
-
-        # Add legal move changes for rook, if required
-
-        return self.legal_moves
-
-class Pawn(Piece):
-    def __init__(self, colour, token) -> None:
-        super().__init__(colour, token)
-        self.general_directional_offset = [8 , 16 , -8 , -16 , 9 , 7 , -9 , -7]
-
-        if 9 <= self.token <= 16 and self.colour == 'l':
-            self.directional_offset = self.general_directional_offset[:2]
-        elif 49 <= self.token <= 56 and self.colour == 'd':
-            self.directional_offset = self.general_directional_offset[2:4]
-        elif self.colour == 'd':
-            self.directional_offset = [self.general_directional_offset[2]]
-        elif self.colour == 'l':
-            self.directional_offset = [self.general_directional_offset[0]]
+import main.pieces
+from main.pieces import (Piece , Rook , Pawn , Bishop , Queen)
 
 
-    def legal_moves_generator(self, token_piece_position_table: dict) -> list:
-        # Add all non-captures to legal_moves
-        super(self.__class__, self).legal_moves_generator(token_piece_position_table) 
-        # Call legal_moves_generator method from the parent class i.e. Piece
-
-        self.capture = True
-
-        if self.colour == 'l':
-            self.directional_offset = self.general_directional_offset[4:6]
-        else:
-            self.directional_offset = self.general_directional_offset[6:]
-
-        # Add all captures to legal_moves
-        super(self.__class__, self).legal_moves_generator(token_piece_position_table) 
-
-        self.capture = False
-
-        # Handle special legal moves here, for instance en passant
-
-        return self.legal_moves
-        
-
-def token_generator(piece_position: str) -> int:
-    char, row_number = piece_position
-    row_number = int(row_number)
-    multuplier = 10
-    token = (ord(char) - 65) + ((row_number- 1) * multuplier) - 2*(row_number - 1) + 1
-    return token
 
 def generate_square(token: int) -> str:
+    '''
+    output:[square , 'Invalid']
+    '''
     if 1 <= token <= 64:
         row = (token - 1) // 8
         col = (token - 1) % 8
         file_letter = chr(ord('A') + col)
         rank_number = row +1
         return f"{file_letter}{rank_number}"
-            
+    else:
+        return 'Invalid'
+
+def token_generator(piece_position: str) -> int:
+    '''
+    output:[token , 'Invalid']
+    '''
+    char, row_number = piece_position
+    row_number = int(row_number)
+    multuplier = 10
+    token = (ord(char) - 65) + ((row_number- 1) * multuplier) - 2*(row_number - 1) + 1
+    if not 1 <= token <= 64:
+        return 'Invalid'
+    return token
+    
 
 def token_piece_position_table_gen(piece_position_table):
     table = {}
@@ -162,19 +87,25 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
     '''
     Returns pseudo-legal piece moves
     '''
-    
-    piece, colour = selected_piece
+
+    piece_identifier, colour = selected_piece
 
     token_piece_position_table = token_piece_position_table_gen(piece_position_table)
-    token_selected_piece_position = token_generator(selected_piece_position)
-
-    if piece == 'p':        
-        piece_type = Pawn(colour, token_selected_piece_position)
-
-    if piece == 'r':
-        piece_type = Rook(colour, token_selected_piece_position)
-        
+    token = token_selected_piece_position = token_generator(selected_piece_position)
+    
+    piece = Piece(colour , token_piece_position_table)
+    if piece_identifier == 'p':
+        piece_type = Pawn(colour , token)
+    elif piece_identifier == 'r':
+        piece_type = Rook(colour , token)
+    elif piece_identifier == 'b':
+        piece_type = Bishop(colour , token)
+    elif piece_identifier == 'q':
+        piece_type = Queen(colour , token)
+    else:
+        return [] #exception : Piece type not detected or is invalid
     piece_moves = piece_type.legal_moves_generator(token_piece_position_table)
+
     return sorted(piece_moves)
 
 def update_board(piece_position_table:dict, selected_piece:str, selected_piece_position:str, target_position:str):
@@ -189,7 +120,6 @@ def update_board(piece_position_table:dict, selected_piece:str, selected_piece_p
 def get_piece_position(piece_position_table, search_piece):
     '''
     piece -> piece_type + piece_colour eg. kl, nd etc
-
     Returns the first piece found
     '''
 
