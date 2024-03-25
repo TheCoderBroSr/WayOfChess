@@ -21,6 +21,7 @@ request_initial.onreadystatechange = function() {
 request_target.onreadystatechange = function() {
     if (request_target.readyState === XMLHttpRequest.DONE) {
         if (request_target.status === 211) {
+            play_audio_clip(move_self_audio);
             update_target_box_element(init_box, target_box);
             
             target_box = undefined;
@@ -150,4 +151,8 @@ function update_target_box_element(init_box, target_box) {
         target_box.appendChild(piece);
         init_box.removeChild(init_box.querySelector('img'));
     }
+}
+
+function play_audio_clip(url) {
+    new Audio(url).play();
 }
