@@ -46,10 +46,8 @@ eg:
 NOTE:
 The Piece Class (and by extension all the children class like rook, pawn etc) will be representing the selected piece
 '''
-import main.pieces
+
 from main.pieces import (Piece , Rook , Pawn , Bishop , Queen)
-
-
 
 def generate_square(token: int) -> str:
     '''
