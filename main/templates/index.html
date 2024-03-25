@@ -1,19 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="user-interaction">
-    <div class="user-input">
-        <form method="POST" name="user-input">
-            <label for="fen_position">Custom Position</label>
-            <input type="text" name="fen_position" placeholder="Enter FEN string">
-
-            <div class="button-cluster">
-                <button type="submit" name="set">Set Position</button>
-                <button type="submit" name="reset">Reset Position</button>
-            </div>
-        </form>
-    </div>
-    
+<div class="user-interaction">    
     {% set piece_position_table = session['piece_position_table']%}
     {% set app_url = session['app_url']%}
 
