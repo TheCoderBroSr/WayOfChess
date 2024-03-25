@@ -47,7 +47,7 @@ NOTE:
 The Piece Class (and by extension all the children class like rook, pawn etc) will be representing the selected piece
 '''
 
-from main.pieces import (Piece , Rook , Pawn , Bishop , Queen)
+from main.pieces import (Piece , Rook , Pawn , Bishop , Queen , Knight)
 
 def generate_square(token: int) -> str:
     '''
@@ -100,6 +100,8 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
         piece_type = Bishop(colour , token)
     elif piece_identifier == 'q':
         piece_type = Queen(colour , token)
+    #elif piece_identifier == 'n':
+        #piece_type = Knight(colour , token)
     else:
         return [] #exception : Piece type not detected or is invalid
     piece_moves = piece_type.legal_moves_generator(token_piece_position_table)

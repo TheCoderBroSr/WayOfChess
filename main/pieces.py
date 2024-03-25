@@ -24,6 +24,7 @@ class Piece:
 
         def piece_check() -> str:
             if token_target_position in token_piece_position_table:
+                print('token' , token_target_position)
                 if self.colour == token_piece_position_table[token_target_position][1]:
                     return 'sameColour'
                 else:
@@ -57,15 +58,21 @@ class Piece:
                     else:
                         return 'outOfBounds'
                 if abs(offset_val) == 7 or offset_val == -9:
+                    print('run' , self.token)
                     if moves.generate_square(token_target_position)[0] < column:
                         if piece_check() != 'None':
+                            print(piece_check())
                             return piece_check()
                         else:
                             return 'empty'
                     else:
                         return 'outOfBounds'
-            else:
-                return 'empty'
+            else: #Knight':
+                if piece_check() != 'None':
+                    print(piece_check())
+                    return piece_check()
+                else:
+                    return 'empty'
         else:
             return 'outOfBounds'
             
@@ -77,16 +84,16 @@ class Piece:
         '''
 
         for offset in self.directional_offset:
+            print(offset , self.token)
             token_pseudo_move = self.token + offset
             
             token_pseudo_move_description = self.token_target_description(token_piece_position_table, token_pseudo_move , offset_val = offset)
             if token_pseudo_move_description == 'empty' and self.capture == False:
+                self.legal_moves.append(moves.generate_square(token_pseudo_move))           
+            elif token_pseudo_move_description == 'diffColour' and self.capture == True:
                 self.legal_moves.append(moves.generate_square(token_pseudo_move))
-            else:
+            elif self.capture == False:
                 break
-            
-            if token_pseudo_move_description == 'diffColour' and self.capture == True:
-                self.legal_moves.append(moves.generate_square(token_pseudo_move))
 
     def legal_moves_generator_slidingPieces(self , token_piece_position_table : dict):
         for offset in self.directional_offset:
@@ -104,6 +111,15 @@ class Piece:
                 else:
                     break
                 offset_multipler += 1
+    
+    def legal_moves_generator_knight(self , token_piece_position_table : dict):
+        for offset in self.directional_offset:
+            target_position = self.token + offset
+            token_target_description = self.token_target_description(token_piece_position_table)
+            if token_piece_position_table == 'empty' or token_target_description == 'diffColour':
+                self.legal_moves.append(moves.generate_square(token_target_description))
+            else:
+                continue
     
 class Rook(Piece):
     def __init__(self, colour, token) -> None:
@@ -166,6 +182,7 @@ class Pawn(Piece):
         if self.colour == 'l':
             self.directional_offset = self.general_directional_offset[4:6]
         else:
+            print('running test')
             self.directional_offset = self.general_directional_offset[6:]
 
         # Add all captures to legal_moves
@@ -176,5 +193,14 @@ class Pawn(Piece):
         # Handle special legal moves here, for instance en passant
 
         return self.legal_moves
-            
+    
+class Knight(Piece):
+    def __init__(self, colour, token) -> None:
+        super().__init__(colour, token)
+        self.general_directional_offset = [17 , 15 , -17 , 15 , 10 , -10 , 6 , -6]
 
+    def legal_moves_generator_knight(self, token_piece_position_table: dict):
+        pass
+
+        return self.moves
+            
