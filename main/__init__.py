@@ -33,6 +33,17 @@ def create_app(test_config=None):
 
     @app.route('/', methods=('GET', 'POST'))
     def index():
+        if 'piece_position_table' not in session:
+            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+
+        if 'app_url' not in session:
+            session['app_url'] = APP_URL
+
+        # piece_position, curr_turn, moves, players -> session variables
+        return render_template('index.html')        
+
+    @app.route('/dev', methods=('GET', 'POST'))
+    def dev():
         '''
         k -> king
         q -> queen
@@ -64,7 +75,7 @@ def create_app(test_config=None):
                 flash('Invalid FEN string')
 
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('index.html')
+        return render_template('dev.html')
 
     @app.route('/process_move', methods=['POST'])
     def process_move():
