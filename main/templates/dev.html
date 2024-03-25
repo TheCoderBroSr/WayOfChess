@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="user-interaction">
+    <div class="user-input">
+        <form method="POST" name="user-input">
+            <label for="fen_position">Custom Position</label>
+            <input type="text" name="fen_position" placeholder="Enter FEN string">
+
+            <div class="button-cluster">
+                <button type="submit" name="set">Set Position</button>
+                <button type="submit" name="reset">Reset Position</button>
+            </div>
+        </form>
+    </div>
+    
+    {% set piece_position_table = session['piece_position_table']%}
+    {% set app_url = session['app_url']%}
+
+    <div class="chessboard-area">
+        <div class="chessboard">
+            {% for i in range(8,0,-1) %}
+            <div class="row" id="{{ i }}">
+                {% for j in range(8) %}
+                {% set j = 'ABCDEFGH'[j] %}
+                <div class="box" id="{{ j }}">
+                    {% set i = i | string() %}
+                    {% if i == '1' %}
+                        <div class="file-index">{{ j }}</div>
+                    {% endif %}
+                    {% if j == 'A' %}
+                        <div class="rank-index">{{ i }}</div>
+                    {% endif %}
+                    {% if j + i in piece_position_table.keys() %}
+                        {% set piece_type = piece_position_table[j + i] %}
+                        {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
+                        <img src="{{ url_for('static', filename=file_path) }}" alt="">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+    const url = '{{app_url}}/process_move';
+    const move_self_audio = "{{ url_for('static', filename='assets/move-self.mp3' )}}";
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='board.js') }}" defer></script>
+{% endblock %}
