@@ -123,9 +123,6 @@ class Piece:
             token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
-
-            else:
-                continue
                 
 class Rook(Piece):
     def __init__(self, colour, token) -> None:
@@ -134,7 +131,7 @@ class Rook(Piece):
 
     def legal_moves_generator(self, token_piece_position_table: dict) -> list:
         super(self.__class__, self).legal_moves_generator_slidingPieces(token_piece_position_table)
-        # Add legal move changes for rook, if required
+
         return self.legal_moves
     
 class Bishop(Piece):
@@ -145,7 +142,6 @@ class Bishop(Piece):
     def legal_moves_generator(self, token_piece_position_table: dict) -> list:
         super(self.__class__, self).legal_moves_generator_slidingPieces(token_piece_position_table)
 
-        # Add legal move changes for rook, if required
         return self.legal_moves
 
 class Queen(Piece):
@@ -156,7 +152,6 @@ class Queen(Piece):
     def legal_moves_generator(self, token_piece_position_table: dict) -> list:
         super(self.__class__, self).legal_moves_generator_slidingPieces(token_piece_position_table)
 
-        # Add legal move changes for rook, if required
         return self.legal_moves
 
 
@@ -205,7 +200,6 @@ class Knight(Piece):
         self.directional_offset = [17 , 15 , -17 , -15 , 10 , -10 , 6 , -6]
 
     def legal_moves_generator(self, token_piece_position_table: dict):
-        pass
         super(self.__class__, self).legal_moves_generator_knight(token_piece_position_table) 
-        return self.legal_moves
-            
+        
+        return self.legal_moves   

@@ -68,8 +68,8 @@ def token_generator(piece_position: str) -> int:
     '''
     char, row_number = piece_position
     row_number = int(row_number)
-    multuplier = 10
-    token = (ord(char) - 65) + ((row_number- 1) * multuplier) - 2*(row_number - 1) + 1
+    multiplier = 10
+    token = (ord(char) - 65) + ((row_number- 1) * multiplier) - 2*(row_number - 1) + 1
     if not 1 <= token <= 64:
         return 'Invalid'
     return token
