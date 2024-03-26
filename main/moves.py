@@ -100,8 +100,8 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
         piece_type = Bishop(colour , token)
     elif piece_identifier == 'q':
         piece_type = Queen(colour , token)
-    #elif piece_identifier == 'n':
-        #piece_type = Knight(colour , token)
+    elif piece_identifier == 'n':
+        piece_type = Knight(colour , token)
     else:
         return [] #exception : Piece type not detected or is invalid
     piece_moves = piece_type.legal_moves_generator(token_piece_position_table)
@@ -149,7 +149,7 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
     selected_piece_colour = selected_piece[1]
     legal_moves = []
     
-    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
+    '''selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
@@ -159,6 +159,8 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         if not in_check(temp_piece_position_table, selected_piece_colour):
             legal_moves += [move]
 
+    return legal_moves'''
+    legal_moves = get_piece_moves(piece_position_table,selected_piece , selected_piece_position)
     return legal_moves
 
 if __name__ == '__main__':

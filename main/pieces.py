@@ -24,7 +24,6 @@ class Piece:
 
         def piece_check() -> str:
             if token_target_position in token_piece_position_table:
-                print('token' , token_target_position)
                 if self.colour == token_piece_position_table[token_target_position][1]:
                     return 'sameColour'
                 else:
@@ -58,21 +57,28 @@ class Piece:
                     else:
                         return 'outOfBounds'
                 if abs(offset_val) == 7 or offset_val == -9:
-                    print('run' , self.token)
                     if moves.generate_square(token_target_position)[0] < column:
                         if piece_check() != 'None':
-                            print(piece_check())
                             return piece_check()
                         else:
                             return 'empty'
                     else:
                         return 'outOfBounds'
             else: #Knight':
+                column , row = moves.generate_square(self.token)
+                target_column , target_row = moves.generate_square(token_target_position)
+                if abs(offset_val) == 10 or abs(offset_val) == 6:
+                    if abs(int(target_row) - int(row)) != 1:
+                        return 'outOfBounds'
+                elif abs(offset_val) == 17 or abs(offset_val) == 15:
+                    if abs(int(target_row) - int(row)) != 2:
+                        return 'outOfBounds'
+                    
                 if piece_check() != 'None':
-                    print(piece_check())
                     return piece_check()
                 else:
                     return 'empty'
+
         else:
             return 'outOfBounds'
             
@@ -84,7 +90,6 @@ class Piece:
         '''
 
         for offset in self.directional_offset:
-            print(offset , self.token)
             token_pseudo_move = self.token + offset
             
             token_pseudo_move_description = self.token_target_description(token_piece_position_table, token_pseudo_move , offset_val = offset)
@@ -115,12 +120,13 @@ class Piece:
     def legal_moves_generator_knight(self , token_piece_position_table : dict):
         for offset in self.directional_offset:
             target_position = self.token + offset
-            token_target_description = self.token_target_description(token_piece_position_table)
-            if token_piece_position_table == 'empty' or token_target_description == 'diffColour':
-                self.legal_moves.append(moves.generate_square(token_target_description))
+            token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
+            if token_target_description == 'empty' or token_target_description == 'diffColour':
+                self.legal_moves.append(moves.generate_square(target_position))
+
             else:
                 continue
-    
+                
 class Rook(Piece):
     def __init__(self, colour, token) -> None:
         super().__init__(colour, token)
@@ -182,7 +188,6 @@ class Pawn(Piece):
         if self.colour == 'l':
             self.directional_offset = self.general_directional_offset[4:6]
         else:
-            print('running test')
             self.directional_offset = self.general_directional_offset[6:]
 
         # Add all captures to legal_moves
@@ -197,10 +202,10 @@ class Pawn(Piece):
 class Knight(Piece):
     def __init__(self, colour, token) -> None:
         super().__init__(colour, token)
-        self.general_directional_offset = [17 , 15 , -17 , 15 , 10 , -10 , 6 , -6]
+        self.directional_offset = [17 , 15 , -17 , -15 , 10 , -10 , 6 , -6]
 
-    def legal_moves_generator_knight(self, token_piece_position_table: dict):
+    def legal_moves_generator(self, token_piece_position_table: dict):
         pass
-
-        return self.moves
+        super(self.__class__, self).legal_moves_generator_knight(token_piece_position_table) 
+        return self.legal_moves
             
