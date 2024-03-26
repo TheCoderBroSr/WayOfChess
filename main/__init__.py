@@ -1,5 +1,4 @@
 from . import moves
-from . import pieces
 import os
 import json
 
