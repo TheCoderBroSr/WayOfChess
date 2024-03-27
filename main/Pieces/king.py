@@ -15,4 +15,3 @@ class King(Piece):
             else:
                 continue
         return self.legal_moves
-    

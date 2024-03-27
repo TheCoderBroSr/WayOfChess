@@ -31,7 +31,7 @@ def read_FEN(fen_str:str) -> dict:
             col_num += 1
 
         row_num -= 1
-    return piece_position
+    return [piece_position , player_to_move]
 
 '''
 
@@ -87,10 +87,13 @@ def token_piece_position_table_gen(piece_position_table):
         table[token_generator(key)] = val
     return table
 
-def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
+def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , player_to_move : str) -> list:
     '''
     Returns pseudo-legal piece moves
     '''
+
+    if player_to_move != selected_piece[1]:
+        return []
 
     piece_identifier, colour = selected_piece
 
@@ -136,39 +139,41 @@ def get_piece_position(piece_position_table, search_piece):
         if piece == search_piece:
             return position
 
-def in_check(piece_position_table:dict, player:str) -> bool:
+def in_check(piece_position_table:dict, player:str , piece_to_move : str) -> bool:
     if player == 'l':
         enemy = 'd'
     else:
         enemy = 'l'
 
     player_king_position = get_piece_position(piece_position_table, 'k'+player)
+    
 
     for position, piece in piece_position_table.items():
         if piece[1] == enemy: # get enemy pieces 
-            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position)
+            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position , piece_to_move)
 
             if player_king_position in enemy_piece_legal_moves:
                 return True
             
     return False
 
-def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str) -> list:
+def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , piece_to_move) -> list:
     selected_piece_colour = selected_piece[1]
     legal_moves = []
+    swap = {'l' : 'd' , 'd' : 'l'}
     
-    '''selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position)
+    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position , piece_to_move)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
         temp_piece_position_table = piece_position_table.copy()
         update_board(temp_piece_position_table, selected_piece, selected_piece_position, move)
 
-        if not in_check(temp_piece_position_table, selected_piece_colour):
+        if not in_check(temp_piece_position_table, selected_piece_colour , swap[piece_to_move]):
             legal_moves += [move]
 
-    return legal_moves'''
-    legal_moves = get_piece_moves(piece_position_table,selected_piece , selected_piece_position)
+    if selected_piece[0] == 'k' and len(legal_moves) == 0:
+        print(f"{swap[piece_to_move]} has won!")
     return legal_moves
 
 if __name__ == '__main__':
