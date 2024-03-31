@@ -8,6 +8,8 @@ class Piece:
         self.colour = colour
         self.token = token
         self.legal_moves = []
+        self.kingMoved = False
+        self.rookMoved = False
 
     def isvalidToken(self , token : int) -> bool:
         if 1 <= token <=64 :

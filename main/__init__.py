@@ -119,7 +119,7 @@ def create_app(test_config=None):
             selected_piece_position = session['selected_piece_position']
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
-            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position , turn_total , target_position)
+            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position , turn_total   )
 
             if target_position not in selected_piece_legal_moves:
                 status_code = 221 # error illegal move

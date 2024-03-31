@@ -73,6 +73,9 @@ def token_generator(piece_position: str) -> int:
     if not 1 <= token <= 64:
         return 'Invalid'
     return token
+
+def prev_move():
+    pass
     
 
 def token_piece_position_table_gen(piece_position_table):
@@ -80,6 +83,8 @@ def token_piece_position_table_gen(piece_position_table):
     for key, val in piece_position_table.items():
         table[token_generator(key)] = val
     return table
+
+
 
 def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total) -> list:
     '''
@@ -90,11 +95,6 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
 
     token_piece_position_table = token_piece_position_table_gen(piece_position_table)
     token = token_selected_piece_position = token_generator(selected_piece_position)
-    
-    pieces = Piece(colour , token_piece_position_table)
-
-    if pieces.turn(turn_total) != colour:
-        return []
 
     if piece_identifier == 'p':
         piece_type = Pawn(colour , token)
@@ -165,6 +165,9 @@ def simulate_enemy_move(piece_position_table ,selected_piece , selected_piece_po
 
 
 def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total: int , target_position = None) -> list:
+    pieces = Piece(selected_piece[1] , None)
+    if selected_piece[1] != pieces.turn(turn_total):
+        return []
     selected_piece_colour = selected_piece[1]
     legal_moves = []
     
@@ -194,7 +197,7 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         if enemy_legal_move_count == 0:
             print('checkMate')        
 
-
+    print(target_position)
     return legal_moves
 
 if __name__ == '__main__':
