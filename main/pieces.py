@@ -16,7 +16,7 @@ class Piece:
         else:
             return False
 
-    def token_target_description(self, token_piece_position_table: dict, token_target_position: int , offset_val = 0) -> str:
+    def token_target_description(self, token_piece_position_table:dict, token_target_position:int, offset_val = 0) -> str:
         '''
         Return accordingly if target token in token_piece_position_table is empty or has a piece
         output: ['sameColour' , 'doffColour' , 'empty' , 'outOfBounds']
@@ -84,7 +84,7 @@ class Piece:
             return 'outOfBounds'
             
 
-    def legal_moves_generator_pawn(self, token_piece_position_table: dict):
+    def legal_moves_generator_pawn(self, token_piece_position_table:dict):
         '''
         General legal moves generator for pawn pieces
         Updates self.legal_moves
@@ -101,7 +101,7 @@ class Piece:
             elif self.capture == False:
                 break
 
-    def legal_moves_generator_slidingPieces(self , token_piece_position_table : dict):
+    def legal_moves_generator_slidingPieces(self, token_piece_position_table:dict):
         for offset in self.directional_offset:
             offset_multipler = 1
             while 1:
@@ -118,34 +118,34 @@ class Piece:
                     break
                 offset_multipler += 1
     
-    def legal_moves_generator_knight(self , token_piece_position_table : dict):
+    def legal_moves_generator_knight(self, token_piece_position_table:dict):
         for offset in self.directional_offset:
             target_position = self.token + offset
             token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
 
-    def legal_moves_generator_king(self , token_piece_position_table : dict , can_castle):
+    def legal_moves_generator_king(self, token_piece_position_table:dict, can_castle):
         for offset in self.directional_offset:
             target_position = self.token + offset
             token_target_description = token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
         
-        if self.colour == 'l':
-            can_castle = can_castle[:2]
-            if (can_castle == [0,1] or can_castle == [1,1]) and ('F1' in self.legal_moves) and (moves.token_generator('G1') not in token_piece_position_table):
-                self.legal_moves.append('G1')
-                print('run' , self.legal_moves)
-            if (can_castle == [1 ,0] or can_castle == [1,1]) and ('D1' in self.legal_moves) and (moves.token_generator('C1') not in token_piece_position_table) and (moves.token_generator('B1')):
-                self.legal_moves.append('C1')
-        if self.colour == 'd':
-            can_castle = can_castle[2:]
-            if (can_castle == [0,1] or can_castle == [1,1]) and ('F8' in self.legal_moves) and (moves.token_generator('G8') not in token_piece_position_table):
-                self.legal_moves.append('G8')
-                print('run' , self.legal_moves)
-            if (can_castle == [1 ,0] or can_castle == [1,1]) and ('D8' in self.legal_moves) and (moves.token_generator('C8') not in token_piece_position_table) and (moves.token_generator('B1')):
-                self.legal_moves.append('C8')
+        player_can_castle = can_castle[self.colour]
+        self.row = str(self.row)
+
+        kingside_castle_position = 'G' + self.row
+        queenside_castle_position = 'C' + self.row
+
+        kingside_adj_position = 'F' + self.row
+        queenside_adj_position = 'D' + self.row
+
+        if 'k' in player_can_castle and kingside_adj_position in self.legal_moves and moves.token_generator(kingside_castle_position) not in token_piece_position_table:
+            self.legal_moves.append('G' + self.row)
+        
+        if 'q' in player_can_castle and queenside_adj_position in self.legal_moves and moves.token_generator(queenside_castle_position) not in token_piece_position_table:
+            self.legal_moves.append('C' + self.row)
 
     def turn(self ,turn_total):
         if turn_total % 2 == 1:
@@ -238,9 +238,8 @@ class King(Piece):
         super().__init__(colour, token)
         self.directional_offset = [8 , 9 , 1 , -9 , -8 , -7 , 7 , -1]
         self.canCastle = can_castle
+        self.row = ((self.token - 1)//8) + 1
 
     def legal_moves_generator(self, token_piece_position_table: dict):
         super(self.__class__, self).legal_moves_generator_king(token_piece_position_table , self.canCastle)
-        print(self.canCastle)
-        
         return self.legal_moves  
