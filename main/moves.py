@@ -116,9 +116,7 @@ def update_board(piece_position_table:dict, selected_piece:str, selected_piece_p
     Places selected piece at target square
     Removes selected piece from initial square
     '''
-    print(target_position , selected_piece)
     piece_position_table[target_position] = selected_piece
-    print(piece_position_table)
     del piece_position_table[selected_piece_position]
 
 def get_piece_position(piece_position_table, search_piece):
@@ -196,7 +194,6 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         if enemy_legal_move_count == 0:
             print('checkMate')        
 
-    print(target_position)
     return legal_moves
 
 if __name__ == '__main__':
