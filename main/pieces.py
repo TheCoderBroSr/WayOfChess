@@ -132,9 +132,20 @@ class Piece:
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
         
-        if (can_castle == [0,1] or can_castle == [1,1]) and ('F1' in self.legal_moves) and (moves.token_generator('G1') not in token_piece_position_table):
-            self.legal_moves.append('G1')
-            print('run' , self.legal_moves)
+        if self.colour == 'l':
+            can_castle = can_castle[:2]
+            if (can_castle == [0,1] or can_castle == [1,1]) and ('F1' in self.legal_moves) and (moves.token_generator('G1') not in token_piece_position_table):
+                self.legal_moves.append('G1')
+                print('run' , self.legal_moves)
+            if (can_castle == [1 ,0] or can_castle == [1,1]) and ('D1' in self.legal_moves) and (moves.token_generator('C1') not in token_piece_position_table) and (moves.token_generator('B1')):
+                self.legal_moves.append('C1')
+        if self.colour == 'd':
+            can_castle = can_castle[2:]
+            if (can_castle == [0,1] or can_castle == [1,1]) and ('F8' in self.legal_moves) and (moves.token_generator('G8') not in token_piece_position_table):
+                self.legal_moves.append('G8')
+                print('run' , self.legal_moves)
+            if (can_castle == [1 ,0] or can_castle == [1,1]) and ('D8' in self.legal_moves) and (moves.token_generator('C8') not in token_piece_position_table) and (moves.token_generator('B1')):
+                self.legal_moves.append('C8')
 
     def turn(self ,turn_total):
         if turn_total % 2 == 1:
