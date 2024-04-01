@@ -36,16 +36,15 @@ def create_app(test_config=None):
 
     @app.route('/', methods=('GET', 'POST'))
     def index():
-
-        session['can_castle'] = [1 , 1 , 1 , 1]
-        #1st element represent queen side castle and 2nd element represent king side castle for white
-        #3rd element shows queen side castle and 4th element shows king side castle for black
-        #1 -> True , can castle ; 0 -> False , can not castle
-
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
             global turn_total
             turn_total = 0
+
+        if 'can_castle' not in session:
+            session['can_castle'] = {'l':'kq', 'd':'kq'}
+            # keys -> the players
+            # k -> king side castling, q -> queen side castling
 
         if 'app_url' not in session:
             session['app_url'] = APP_URL
@@ -68,21 +67,9 @@ def create_app(test_config=None):
         '''
         global turn_total
 
-        session['can_castle'] = [1 , 1 , 1 , 1]
-        #1st element represent queen side castle and 2nd element represent king side castle
-        #1 -> True , can castle ; 0 -> False , can not castle
-
-        if 'piece_position_table' not in session:
-            session['piece_position_table'] = moves.read_FEN(START_POSITION)
-            turn_total = 0
-
-        if 'app_url' not in session:
-            session['app_url'] = APP_URL
-
         if request.method == "POST" and 'reset' in request.form:
-            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+            session.clear()
             turn_total = 0
-            
 
         elif request.method == "POST" and 'set' in request.form:
             custom_position = request.form['fen_position']
@@ -92,6 +79,16 @@ def create_app(test_config=None):
                 session['piece_position_table'] = moves.read_FEN(custom_position)
             except:
                 flash('Invalid FEN string')
+
+        if 'piece_position_table' not in session:
+            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+            turn_total = 0
+
+        if 'app_url' not in session:
+            session['app_url'] = APP_URL
+
+        if 'can_castle' not in session:
+            session['can_castle'] = {'l':'kq', 'd':'kq'}
 
         # piece_position, curr_turn, moves, players -> session variables
         return render_template('dev.html')
@@ -129,9 +126,12 @@ def create_app(test_config=None):
         if piece_data['data'] == 'target_data':
             selected_piece = session['selected_piece']
             selected_piece_position = session['selected_piece_position']
+            can_castle = session['can_castle']
+
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
-            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position ,turn_total, session['can_castle'] , target_position  )
+                
+            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle, target_position)
 
             if target_position not in selected_piece_legal_moves:
                 status_code = 221 # error illegal move
@@ -140,63 +140,37 @@ def create_app(test_config=None):
              #   status_code = 231   
               #  response_data = {'msg-type': 'success', 'msg':'CheckMate'}
             else:
-                print(selected_piece , target_position)
-                if selected_piece == 'kl':
-                    if target_position == 'G1':
-                        print('run')
-                        moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rl' , 'H1' , 'F1') 
-                        response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
-                    elif target_position == 'C1':
-                        moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rl' , 'A1' , 'D1')
-                        response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'}
-                elif selected_piece == 'kd':
-                    if target_position == 'G8':
-                        print('run')
-                        moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rd' , 'H8' , 'F8') 
-                        response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
-                    elif target_position == 'C8':
-                        moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rd' , 'A8' , 'D8')
-                        response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'}
+                selected_piece_type, selected_piece_colour = selected_piece
 
-                        
+                if selected_piece_type == 'k' and selected_piece_position[0] == "E" and target_position[0] in 'CG': # target_position column
+                    # Handle castling
+                    
+                    # selected_piece_postion = E1/E8
+                    # target_position = G1/G8/C1/C8
+                    # If E<G -> king side castle
+                    # If E>C -> queen side castle
 
+                    rook_init_position = 'AH'[selected_piece_position[0] < target_position[0]] + selected_piece_position[1]
+                    rook_target_position = 'DF'[rook_init_position[0] == 'H'] + selected_piece_position[1]
+
+                    moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+                    moves.update_board(piece_position_table, 'r' + selected_piece_colour, rook_init_position, rook_target_position) 
+
+                    if target_position[0] == 'G':
+                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k', '')
+                    else:
+                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('q', '')
+
+                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
                 else:
                     moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
                     response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal'}
+                
                 turn_total += 1
-
                 status_code = 211 # legal move
 
-
-                #For white Castling
-                if (selected_piece_position == 'H1' and session['can_castle'][0:2] == [0 , 1]) or (selected_piece_position == 'A1' and session['can_castle'][0:2] == [1,0]):
-                    session['can_castle'][0:2] = [0 , 0]
-                    print('afa  ')
-                elif selected_piece_position == 'H1':
-                    session['can_castle'][0:2] = [1 , 0]
-                elif selected_piece_position == 'A1':
-                     session['can_castle'][0:2] = [0 , 1]
-                elif selected_piece_position == 'E1':
-                     print('run 1')
-                     session['can_castle'][0:2] = [0 , 0]
-
-                #For black Castling
-                if (selected_piece_position == 'H8' and session['can_castle'][2:] == [0 , 1]) or (selected_piece_position == 'A8' and session['can_castle'][2:] == [1,0]):
-                    session['can_castle'][2:] = [0 , 0]
-                    print('afa  ')
-                elif selected_piece_position == 'H8':
-                    session['can_castle'][2:] = [1 , 0]
-                elif selected_piece_position == 'A8':
-                     session['can_castle'][2:] = [0 , 1]
-                elif selected_piece_position == 'E8':
-                     print('run 1')
-                     session['can_castle'][2:] = [0 , 0]
-
             session['piece_position_table'] = piece_position_table
+            session['can_castle'] = can_castle
             session['selected_piece'] = None
             session['selected_piece_position'] = None
 
