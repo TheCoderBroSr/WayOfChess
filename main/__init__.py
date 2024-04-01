@@ -11,6 +11,7 @@ def create_app(test_config=None):
     # create and configure the app
     global turn_total
     turn_total = 0
+
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -35,6 +36,11 @@ def create_app(test_config=None):
 
     @app.route('/', methods=('GET', 'POST'))
     def index():
+
+        session['can_castle_l'] = [1 , 1]
+        #1st element represent queen side castle and 2nd element represent king side castle
+        #1 -> True , can castle ; 0 -> False , can not castle
+
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
             global turn_total
@@ -60,6 +66,11 @@ def create_app(test_config=None):
         d -> dark(black)
         '''
         global turn_total
+
+        session['can_castle_l'] = [1 , 1]
+        #1st element represent queen side castle and 2nd element represent king side castle
+        #1 -> True , can castle ; 0 -> False , can not castle
+
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
             turn_total = 0
@@ -107,7 +118,7 @@ def create_app(test_config=None):
         if piece_data['data'] == 'initial_data':
             session['selected_piece'] = piece_data['selected_piece']
             session['selected_piece_position'] = piece_data['selected_piece_position']         
-            legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position'] ,turn_total)
+            legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position']  ,turn_total, session['can_castle_l'] )
             response_data = {'legal_moves': legal_moves}
             
             status_code = 210
@@ -119,7 +130,7 @@ def create_app(test_config=None):
             selected_piece_position = session['selected_piece_position']
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
-            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position , turn_total   )
+            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position ,turn_total, session['can_castle_l'] , target_position  )
 
             if target_position not in selected_piece_legal_moves:
                 status_code = 221 # error illegal move
@@ -128,11 +139,33 @@ def create_app(test_config=None):
              #   status_code = 231   
               #  response_data = {'msg-type': 'success', 'msg':'CheckMate'}
             else:
-                moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+                print(selected_piece , target_position)
+                if selected_piece == 'kl':
+                    if target_position == 'G1':
+                        print('run')
+                        moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+                        moves.update_board(piece_position_table , 'rl' , 'H1' , 'F1')
+                        print(piece_position_table)
+
+                else:
+                    moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
                 turn_total += 1
 
                 status_code = 211 # legal capture
                 response_data = {'msg-type': 'success', 'msg': 'legal move made'}
+
+                if (selected_piece_position == 'H1' and session['can_castle_l'] == [0 , 1]) or (selected_piece_position == 'A1' and session['can_castle_l'] == [1,0]):
+                    session['can_castle_l'] = [0 , 0]
+                    print('afa  ')
+                elif selected_piece_position == 'H1':
+                    session['can_castle_l'] = [1 , 0]
+                elif selected_piece_position == 'A1':
+                     session['can_castle_l'] = [0 , 1]
+                elif selected_piece_position == 'E1':
+                     print('run 1')
+                     session['can_castle_l'] = [0 , 0]
+                
+
 
             
 

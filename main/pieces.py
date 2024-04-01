@@ -8,8 +8,7 @@ class Piece:
         self.colour = colour
         self.token = token
         self.legal_moves = []
-        self.kingMoved = False
-        self.rookMoved = False
+        self.canCastle = None 
 
     def isvalidToken(self , token : int) -> bool:
         if 1 <= token <=64 :
@@ -126,12 +125,16 @@ class Piece:
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
 
-    def legal_moves_generator_king(self , token_piece_position_table : dict):
+    def legal_moves_generator_king(self , token_piece_position_table : dict , can_castle):
         for offset in self.directional_offset:
             target_position = self.token + offset
             token_target_description = token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
+        
+        if (can_castle == [0,1] or can_castle == [1,1]) and ('F1' in self.legal_moves) and (moves.token_generator('G1') not in token_piece_position_table):
+            self.legal_moves.append('G1')
+            print('run' , self.legal_moves)
 
     def turn(self ,turn_total):
         if turn_total % 2 == 1:
@@ -220,11 +223,13 @@ class Knight(Piece):
         return self.legal_moves
 
 class King(Piece):
-    def __init__(self, colour, token) -> None:
+    def __init__(self, colour, token , can_castle) -> None:
         super().__init__(colour, token)
         self.directional_offset = [8 , 9 , 1 , -9 , -8 , -7 , 7 , -1]
+        self.canCastle = can_castle
 
     def legal_moves_generator(self, token_piece_position_table: dict):
-        super(self.__class__, self).legal_moves_generator_king(token_piece_position_table) 
+        super(self.__class__, self).legal_moves_generator_king(token_piece_position_table , self.canCastle)
+        print(self.canCastle)
         
         return self.legal_moves  

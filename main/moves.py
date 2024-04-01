@@ -73,9 +73,6 @@ def token_generator(piece_position: str) -> int:
     if not 1 <= token <= 64:
         return 'Invalid'
     return token
-
-def prev_move():
-    pass
     
 
 def token_piece_position_table_gen(piece_position_table):
@@ -86,7 +83,7 @@ def token_piece_position_table_gen(piece_position_table):
 
 
 
-def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total) -> list:
+def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total , can_castle) -> list:
     '''
     Returns pseudo-legal piece moves
     '''
@@ -107,7 +104,7 @@ def get_piece_moves(piece_position_table:dict , selected_piece:str , selected_pi
     elif piece_identifier == 'n':
         piece_type = Knight(colour , token)
     elif piece_identifier == 'k':
-        piece_type = King(colour , token)
+        piece_type = King(colour , token , can_castle)
     else:
         return [] #exception : Piece type not detected or is invalid
     piece_moves = piece_type.legal_moves_generator(token_piece_position_table)
@@ -119,8 +116,9 @@ def update_board(piece_position_table:dict, selected_piece:str, selected_piece_p
     Places selected piece at target square
     Removes selected piece from initial square
     '''
-
+    print(target_position , selected_piece)
     piece_position_table[target_position] = selected_piece
+    print(piece_position_table)
     del piece_position_table[selected_piece_position]
 
 def get_piece_position(piece_position_table, search_piece):
@@ -134,7 +132,7 @@ def get_piece_position(piece_position_table, search_piece):
         if piece == search_piece:
             return position
 
-def in_check(piece_position_table:dict, player:str , turn_total:int) -> bool:
+def in_check(piece_position_table:dict, player:str , turn_total:int , can_castle) -> bool:
     if player == 'l':
         enemy = 'd'
     else:
@@ -144,42 +142,43 @@ def in_check(piece_position_table:dict, player:str , turn_total:int) -> bool:
 
     for position, piece in piece_position_table.items():
         if piece[1] == enemy: # get enemy pieces 
-            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position , turn_total+1)
+            enemy_piece_legal_moves = get_piece_moves(piece_position_table, piece, position , turn_total+1 , can_castle)
 
             if player_king_position in enemy_piece_legal_moves:
                 return True
             
     return False
 
-def simulate_enemy_move(piece_position_table ,selected_piece , selected_piece_position , turn_total):
-    moves = get_piece_moves(piece_position_table , selected_piece , selected_piece_position , turn_total)
+def simulate_enemy_move(piece_position_table ,selected_piece , selected_piece_position , turn_total , can_castle):
+    moves = get_piece_moves(piece_position_table , selected_piece , selected_piece_position , turn_total , can_castle)
     legal_moves = []
     if len(moves) == 0:
         return []
     for move in moves:
         temp_piece_position_table = piece_position_table.copy()
         update_board(temp_piece_position_table, selected_piece, selected_piece_position, move)
-        if not in_check(temp_piece_position_table, selected_piece[1] , turn_total):
+        if not in_check(temp_piece_position_table, selected_piece[1] , turn_total , can_castle):
             legal_moves += [move]
     return legal_moves
 
 
-def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total: int , target_position = None) -> list:
+def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_position:str , turn_total: int, can_castle , target_position = None) -> list:
+
+    
     pieces = Piece(selected_piece[1] , None)
     if selected_piece[1] != pieces.turn(turn_total):
         return []
     selected_piece_colour = selected_piece[1]
     legal_moves = []
     
-    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position , turn_total)
-
+    selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position , turn_total , can_castle)
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
         temp_piece_position_table = piece_position_table.copy()
         update_board(temp_piece_position_table, selected_piece, selected_piece_position, move)
 
-        if not in_check(temp_piece_position_table, selected_piece_colour , turn_total):
+        if not in_check(temp_piece_position_table, selected_piece_colour , turn_total , can_castle):
             legal_moves += [move]
 
     if target_position!= None:
@@ -192,7 +191,7 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         for selected_piece_position , selected_piece in piece_position_table.items():
             pieces = Piece(selected_piece[1] , piece_position_table)
             if selected_piece[1] == pieces.turn(turn_total + 1):
-                enemy_legal_move_count += len(simulate_enemy_move(temp_piece_position_table , selected_piece , selected_piece_position , turn_total+1))
+                enemy_legal_move_count += len(simulate_enemy_move(temp_piece_position_table , selected_piece , selected_piece_position , turn_total+1 , can_castle))
                     
         if enemy_legal_move_count == 0:
             print('checkMate')        
