@@ -8,8 +8,6 @@ request_initial.onreadystatechange = function() {
             response = JSON.parse(request_initial.responseText);
 
             legal_moves = response.legal_moves;
-            console.log(legal_moves);
-
             toggle_legal_moves_box(legal_moves);
 
         } else {
@@ -20,16 +18,10 @@ request_initial.onreadystatechange = function() {
 
 request_target.onreadystatechange = function() {
     if (request_target.readyState === XMLHttpRequest.DONE) {
+        let response = undefined;
+
         if (request_target.status === 211) {
-            play_audio_clip(move_self_audio);
-            update_target_box_element(init_box, target_box);
-            
-            target_box = undefined;
-            init_box = undefined;
-    
-            toggle_legal_moves_box(legal_moves);
-    
-            legal_moves = undefined;
+            response = JSON.parse(request_target.responseText);
         } else if (request_target.status === 221) {
             target_box = undefined;
             init_box = undefined;
@@ -41,6 +33,38 @@ request_target.onreadystatechange = function() {
         } else {
             console.error('Error:', request_target.status);
         }
+
+        if (response && response.move_type === 'normal') {
+            play_audio_clip(move_self_audio);
+            update_target_box_element(init_box, target_box);
+            
+            target_box = undefined;
+            init_box = undefined;
+    
+            toggle_legal_moves_box(legal_moves);
+    
+            legal_moves = undefined;
+        } else if(response && response.move_type === 'c') {
+            play_audio_clip(move_castle_audio);
+
+            let row_id = init_box.parentNode.id;
+            let rook_castle_box_id = target_box.id > init_box.id ? 'H' : 'A'; 
+            let rook_target_box_id = rook_castle_box_id == 'H' ? 'F':'D';
+
+            
+            let rook_castle_box = document.querySelector(`div[id='${row_id}'] div[id='${rook_castle_box_id}']`);   
+            let rook_target_box = document.querySelector(`div[id='${row_id}'] div[id='${rook_target_box_id}']`);
+
+            update_target_box_element(init_box, target_box);
+            update_target_box_element(rook_castle_box, rook_target_box);
+
+            target_box = undefined;
+            init_box = undefined;
+    
+            toggle_legal_moves_box(legal_moves);
+    
+            legal_moves = undefined;
+        } 
     }
 }
 
@@ -75,8 +99,8 @@ window.onclick = e => {
         
         send_initial_piece_data(request_initial, url, piece_type, row, box);
 
-        console.log('Piece type: ' + piece_type);
-        console.log(box.id + row.id);
+        // console.log('Piece type: ' + piece_type);
+        // console.log(box.id + row.id);
     } else if (box && row && init_box && box == init_box) {
         init_box.classList.remove('active');
         
@@ -89,7 +113,7 @@ window.onclick = e => {
         target_box = box;
 
         init_box.classList.remove('active');
-        console.log('Target Box:', box.id + row.id);
+        // console.log('Target Box:', box.id + row.id);
 
         target_piece_type = piece_type ? piece_type.slice(6,8):'';
 
