@@ -155,11 +155,11 @@ def create_app(test_config=None):
                     if target_position == 'G8':
                         print('run')
                         moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rl' , 'H8' , 'F8') 
+                        moves.update_board(piece_position_table , 'rd' , 'H8' , 'F8') 
                         response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
                     elif target_position == 'C8':
                         moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                        moves.update_board(piece_position_table , 'rl' , 'A8' , 'D8')
+                        moves.update_board(piece_position_table , 'rd' , 'A8' , 'D8')
                         response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'}
 
                         
