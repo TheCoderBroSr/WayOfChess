@@ -145,14 +145,15 @@ def create_app(test_config=None):
                         print('run')
                         moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
                         moves.update_board(piece_position_table , 'rl' , 'H1' , 'F1')
-                        print(piece_position_table)
+                        response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'}
+                        #c-> castle
 
                 else:
                     moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal'}
                 turn_total += 1
 
-                status_code = 211 # legal capture
-                response_data = {'msg-type': 'success', 'msg': 'legal move made'}
+                status_code = 211 # legal move
 
                 if (selected_piece_position == 'H1' and session['can_castle_l'] == [0 , 1]) or (selected_piece_position == 'A1' and session['can_castle_l'] == [1,0]):
                     session['can_castle_l'] = [0 , 0]
@@ -164,10 +165,6 @@ def create_app(test_config=None):
                 elif selected_piece_position == 'E1':
                      print('run 1')
                      session['can_castle_l'] = [0 , 0]
-                
-
-
-            
 
             session['piece_position_table'] = piece_position_table
             session['selected_piece'] = None
