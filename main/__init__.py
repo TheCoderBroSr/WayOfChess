@@ -163,6 +163,14 @@ def create_app(test_config=None):
 
                     response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
                 else:
+                    # Remove castling ability when king/rook moved (not castle)
+                    if can_castle[selected_piece_colour] and selected_piece_type == 'k': # Piece being moves is a king (not castle)
+                        can_castle[selected_piece_colour] = ''
+                    elif can_castle[selected_piece_colour] and selected_piece_type == 'r' and selected_piece_position > 'E':
+                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k', '')
+                    elif can_castle[selected_piece_colour] and selected_piece_type == 'r':
+                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('q', '')
+
                     moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
                     response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal'}
                 
