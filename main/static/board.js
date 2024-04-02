@@ -35,7 +35,15 @@ request_target.onreadystatechange = function() {
         }
 
         if (response && response.move_type === 'normal') {
-            play_audio_clip(move_self_audio);
+            if (response.move_flag === 'check') {
+                play_audio_clip(move_check_audio);
+            }
+            else if (response.move_flag === 'move') {
+                play_audio_clip(move_self_audio);
+            } else {
+                play_audio_clip(move_capture_audio);
+            }
+
             update_target_box_element(init_box, target_box);
             
             target_box = undefined;
