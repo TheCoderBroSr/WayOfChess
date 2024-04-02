@@ -4,7 +4,9 @@
 <script>
     const url = '{{app_url}}/process_move';
     const move_self_audio = "{{ url_for('static', filename='assets/move-self.mp3' )}}";
+    const move_capture_audio = "{{ url_for('static', filename='assets/capture.mp3' )}}";
     const move_castle_audio = "{{ url_for('static', filename='assets/castle.mp3' )}}";
+    const move_check_audio = "{{ url_for('static', filename='assets/move-check.mp3' )}}";
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename='board.js') }}" defer></script>
 <h1 class="main-title">WayOfChess</h1>
