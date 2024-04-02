@@ -172,11 +172,13 @@ def create_app(test_config=None):
                         can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('q', '')
 
                     moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal'}
+
+                    move_flag = [['capture', 'move'][target_piece == ''], 'check'][moves.in_check(piece_position_table, turn_total+1, can_castle)]
+                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal', 'move_flag':move_flag}
                 
                 turn_total += 1
                 status_code = 211 # legal move
-
+                
             session['piece_position_table'] = piece_position_table
             session['can_castle'] = can_castle
             session['selected_piece'] = None
