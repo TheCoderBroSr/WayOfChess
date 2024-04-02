@@ -130,12 +130,8 @@ def get_piece_position(piece_position_table, search_piece):
         if piece == search_piece:
             return position
 
-def in_check(piece_position_table:dict, player:str , turn_total:int , can_castle) -> bool:
-    if player == 'l':
-        enemy = 'd'
-    else:
-        enemy = 'l'
-
+def in_check(piece_position_table:dict, turn_total:int , can_castle) -> bool:
+    player, enemy = ['dl', 'ld'][turn_total % 2 == 0]
     player_king_position = get_piece_position(piece_position_table, 'k'+player)
 
     for position, piece in piece_position_table.items():
@@ -155,7 +151,7 @@ def simulate_enemy_move(piece_position_table ,selected_piece , selected_piece_po
     for move in moves:
         temp_piece_position_table = piece_position_table.copy()
         update_board(temp_piece_position_table, selected_piece, selected_piece_position, move)
-        if not in_check(temp_piece_position_table, selected_piece[1] , turn_total , can_castle):
+        if not in_check(temp_piece_position_table, turn_total, can_castle):
             legal_moves += [move]
     return legal_moves
 
@@ -176,7 +172,7 @@ def legal_moves(piece_position_table:dict , selected_piece:str , selected_piece_
         temp_piece_position_table = piece_position_table.copy()
         update_board(temp_piece_position_table, selected_piece, selected_piece_position, move)
 
-        if not in_check(temp_piece_position_table, selected_piece_colour , turn_total , can_castle):
+        if not in_check(temp_piece_position_table, turn_total, can_castle):
             legal_moves += [move]
 
     if target_position!= None:
