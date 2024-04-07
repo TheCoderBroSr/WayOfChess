@@ -1,3 +1,10 @@
+const audio_files = {
+    move_self: "/static/assets/move-self.mp3",
+    move_check: "/static/assets/move-check.mp3",
+    move_capture: "/static/assets/capture.mp3",
+    move_castle: "/static/assets/castle.mp3"
+};
+
 let init_box, target_box, legal_moves;
 const request_initial = new XMLHttpRequest();
 const request_target = new XMLHttpRequest();
@@ -36,12 +43,12 @@ request_target.onreadystatechange = function() {
 
         if (response && response.move_type === 'normal') {
             if (response.move_flag === 'check') {
-                play_audio_clip(move_check_audio);
+                play_audio_clip('move_check');
             }
             else if (response.move_flag === 'move') {
-                play_audio_clip(move_self_audio);
+                play_audio_clip('move_self');
             } else {
-                play_audio_clip(move_capture_audio);
+                play_audio_clip('move_capture');
             }
 
             update_target_box_element(init_box, target_box);
@@ -53,7 +60,7 @@ request_target.onreadystatechange = function() {
     
             legal_moves = undefined;
         } else if(response && response.move_type === 'c') {
-            play_audio_clip(move_castle_audio);
+            play_audio_clip('move_castle');
 
             let row_id = init_box.parentNode.id;
             let rook_castle_box_id = target_box.id > init_box.id ? 'H' : 'A'; 
@@ -185,6 +192,10 @@ function update_target_box_element(init_box, target_box) {
     }
 }
 
-function play_audio_clip(url) {
-    new Audio(url).play();
+function play_audio_clip(audio_name) {
+    if (audio_files.hasOwnProperty(audio_name)) {
+        const audio = new Audio(audio_files[audio_name]);
+        audio.load();
+        audio.play();
+    }
 }
