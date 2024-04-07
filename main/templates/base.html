@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <title>{% block title %}{% endblock %} Way of Chess</title>
+<link rel="shortcut icon" href="{{ url_for('static', filename='assets/logo.ico') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <script>
     const url = '{{app_url}}/process_move';
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename='board.js') }}" defer></script>
-<h1 class="main-title">WayOfChess</h1>
+<nav>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='assets/logo.png')}}" alt="LOGO">
+        <h1 class="title">WayOfChess</h1>
+    </div>
+</nav>
 {% block content %}{% endblock %}
