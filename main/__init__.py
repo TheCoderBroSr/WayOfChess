@@ -9,9 +9,6 @@ from flask import (
 
 def create_app(test_config=None):
     # create and configure the app
-    global turn_total
-    turn_total = 0
-
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -38,13 +35,14 @@ def create_app(test_config=None):
     def index():
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
-            global turn_total
-            turn_total = 0
 
         if 'can_castle' not in session:
             session['can_castle'] = {'l':'kq', 'd':'kq'}
             # keys -> the players
             # k -> king side castling, q -> queen side castling
+
+        if 'turn_total' not in session:
+            session['turn_total'] = 0
 
         if 'app_url' not in session:
             session['app_url'] = APP_URL
@@ -65,11 +63,9 @@ def create_app(test_config=None):
         l -> light(white)
         d -> dark(black)
         '''
-        global turn_total
 
         if request.method == "POST" and 'reset' in request.form:
             session.clear()
-            turn_total = 0
 
         elif request.method == "POST" and 'set' in request.form:
             custom_position = request.form['fen_position']
@@ -82,13 +78,15 @@ def create_app(test_config=None):
 
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
-            turn_total = 0
 
         if 'app_url' not in session:
             session['app_url'] = APP_URL
 
         if 'can_castle' not in session:
             session['can_castle'] = {'l':'kq', 'd':'kq'}
+
+        if 'turn_total' not in session:
+            session['turn_total'] = 0
 
         # piece_position, curr_turn, moves, players -> session variables
         return render_template('dev.html')
@@ -102,7 +100,6 @@ def create_app(test_config=None):
         221 -> Illegal piece move made
         231 -> CheckMate
         '''
-        global turn_total
         piece_data = request.json
 
         if 'selected_piece' not in session:
@@ -116,7 +113,7 @@ def create_app(test_config=None):
         if piece_data['data'] == 'initial_data':
             session['selected_piece'] = piece_data['selected_piece']
             session['selected_piece_position'] = piece_data['selected_piece_position']         
-            legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position']  ,turn_total, session['can_castle'] )
+            legal_moves = moves.legal_moves(session['piece_position_table'], session['selected_piece'], session['selected_piece_position'], session['turn_total'], session['can_castle'])
             response_data = {'legal_moves': legal_moves}
             
             status_code = 210
@@ -127,6 +124,7 @@ def create_app(test_config=None):
             selected_piece = session['selected_piece']
             selected_piece_position = session['selected_piece_position']
             can_castle = session['can_castle']
+            turn_total = session['turn_total']
 
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
@@ -180,6 +178,7 @@ def create_app(test_config=None):
                 status_code = 211 # legal move
                 
             session['piece_position_table'] = piece_position_table
+            session['turn_total'] = turn_total
             session['can_castle'] = can_castle
             session['selected_piece'] = None
             session['selected_piece_position'] = None
