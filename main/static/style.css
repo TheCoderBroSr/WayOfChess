@@ -7,7 +7,11 @@
     --dark-blue-color: #397586;
     --light-green-color: #1fe7ab;
     --dark-green-color: #037160;
+    --logo-bg-color: #D3E2E8;
+    --logo-text-color: #042D40;
 
+    --navbar-width: 5em;
+    --navbar-expanded-width: calc(var(--navbar-width) * 3.2);
     --chess-box-width: 3.65em;
 }
 
@@ -19,18 +23,49 @@ body {
     color: var(--light-text-color);
 }
 
-.main-title {
-    font-size: 2.2em;
-    width: min(300px, 7.5em);
-    padding: 0.15em;
+/* navbar */
+nav {
+    display: inline-block;
+    position: fixed;
+    height: 100vh;
+    width: var(--navbar-width);
+    background: var(--dark-bg-color);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    filter: brightness(0.7);
+    overflow: hidden;
+    transition: width 0.3s ease-in-out;
+}
+
+nav:hover {
+    width: var(--navbar-expanded-width);
+}
+
+.logo {
+    display: flex;
+    background: var(--logo-bg-color);
+    align-items: center;
+    height: var(--navbar-width);
+}
+
+.logo img {
+    width: calc(0.8 * var(--navbar-width)); 
+    margin-inline: calc(0.1 * var(--navbar-width));
+    height: calc(0.8 * var(--navbar-width));
+}
+
+.logo .title {
+    width: 100%;
     text-align: center;
-    color: var(--light-blue-color);
+    color: var(--dark-bg-color);
 }
 
 /* user interaction area */
 .user-interaction {
     display: flex;
-
+    margin-left: var(--navbar-width);
+    width: calc(100% - var(--navbar-width));
+    height: 100vh;
 }
 
 /* custom position form */
@@ -89,10 +124,12 @@ body {
 /* chessboard */
 .chessboard-area {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .chessboard {
-    margin: 0 auto;
     width: calc(var(--chess-box-width) * 8);
     border: 3px solid var(--light-bg-color);
     border-radius: 4px;
