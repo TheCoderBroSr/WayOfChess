@@ -7,12 +7,12 @@
     --dark-blue-color: #397586;
     --light-green-color: #1fe7ab;
     --dark-green-color: #037160;
-    --logo-bg-color: #D3E2E8;
-    --logo-text-color: #042D40;
+    
+    --chess-box-width: 3.65em;
 
     --navbar-width: 5em;
     --navbar-expanded-width: calc(var(--navbar-width) * 3.2);
-    --chess-box-width: 3.65em;
+    --navbar-darkness: 0.3;
 }
 
 body {
@@ -28,11 +28,14 @@ nav {
     display: inline-block;
     position: fixed;
     height: 100vh;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, var(--navbar-darkness)),
+        rgba(0, 0, 0, var(--navbar-darkness))
+      ) var(--dark-bg-color); 
     width: var(--navbar-width);
-    background: var(--dark-bg-color);
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    filter: brightness(0.7);
     overflow: hidden;
     transition: width 0.3s ease-in-out;
 }
@@ -41,20 +44,20 @@ nav:hover {
     width: var(--navbar-expanded-width);
 }
 
-.logo {
+nav .logo {
     display: flex;
-    background: var(--logo-bg-color);
+    background: linear-gradient(180deg, var(--dark-blue-color), var(--light-blue-color));
     align-items: center;
     height: var(--navbar-width);
 }
 
-.logo img {
+nav .logo img {
     width: calc(0.8 * var(--navbar-width)); 
     margin-inline: calc(0.1 * var(--navbar-width));
     height: calc(0.8 * var(--navbar-width));
 }
 
-.logo .title {
+nav .logo .title {
     width: 100%;
     text-align: center;
     color: var(--dark-bg-color);
