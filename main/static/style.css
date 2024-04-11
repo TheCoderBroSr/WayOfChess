@@ -131,8 +131,9 @@ nav .logo .title {
         to top,
         rgba(0, 0, 0, var(--navbar-darkness)),
         rgba(0, 0, 0, var(--navbar-darkness))
-      ) var(--dark-bg-color);
+    ) var(--dark-bg-color);
     display: flex;
+    box-sizing: border-box;
     gap: 20px;
     align-items: center;
     border-radius: 6px;
@@ -170,6 +171,10 @@ nav .logo .title {
     align-items: center;
     width: 10em;
     height: 100%;
+}
+
+.chessboard-area .player.active {
+    border: 3px solid var(--light-green-color);
 }
 
 /* chessboard */
