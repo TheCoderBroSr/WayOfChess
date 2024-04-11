@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="user-interaction">    
+<div class="user-interaction">
     {% set piece_position_table = session['piece_position_table']%}
     {% set app_url = session['app_url']%}
-
     <div class="chessboard-area">
+        <div class="player">
+            <div class="profile">
+                <img src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
+            </div>
+            <h3 class="name">Black</h3>
+            <div class="clock" id="clock-d">15:00</div>
+        </div>
         <div class="chessboard">
             {% for i in range(8,0,-1) %}
             <div class="row" id="{{ i }}">
@@ -28,6 +34,13 @@
                 {% endfor %}
             </div>
             {% endfor %}
+        </div>
+        <div class="player">
+            <div class="profile">
+                <img src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
+            </div>
+            <h3 class="name">White</h3>
+            <div class="clock" id="clock-l">15:00</div>
         </div>
     </div>
 </div>
