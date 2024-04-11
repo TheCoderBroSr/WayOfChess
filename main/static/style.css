@@ -8,11 +8,12 @@
     --light-green-color: #1fe7ab;
     --dark-green-color: #037160;
     
-    --chess-box-width: 3.65em;
+    --chess-box-width: 3.5em;
+    --chessboard-width: calc(var(--chess-box-width) * 8);
 
     --navbar-width: 5em;
-    --navbar-expanded-width: calc(var(--navbar-width) * 3.2);
-    --navbar-darkness: 0.3;
+    --navbar-expanded-width: max(12.5em, calc(var(--navbar-width) * 3.5));
+    --navbar-darkness: 0.4;
 }
 
 body {
@@ -112,28 +113,77 @@ nav .logo .title {
     border: 3px solid transparent;
     border-radius: 6px;
     background-color: var(--dark-blue-color);
-
+    
     box-sizing: border-box;
 }
 
 .user-input button[name='reset'] {
     background-color: var(--light-blue-color);
 }
- 
+
 .user-input button:hover {
     cursor: pointer;
+}
+
+/* chessboard players */
+.chessboard-area .player {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, var(--navbar-darkness)),
+        rgba(0, 0, 0, var(--navbar-darkness))
+      ) var(--dark-bg-color);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-radius: 6px;
+    width: calc(var(--chessboard-width) + 6px);
+    height: 4em;
+}
+
+.chessboard-area .player .profile {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chessboard-area .player .profile img {
+    --img-size: 3em;
+    border-radius: 5px;
+    width: var(--img-size);
+    height: var(--img-size);
+}
+
+.chessboard-area .player .name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.chessboard-area .player .clock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10em;
+    height: 100%;
 }
 
 /* chessboard */
 .chessboard-area {
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .chessboard {
-    width: calc(var(--chess-box-width) * 8);
+    margin: 10px 0 10px 0;
+    width: var(--chessboard-width);
     border: 3px solid var(--light-bg-color);
     border-radius: 4px;
 }
