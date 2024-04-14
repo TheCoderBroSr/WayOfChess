@@ -6,6 +6,7 @@ const audio_files = {
 };
 
 let init_box, target_box, legal_moves;
+const players = document.getElementsByClassName('player');
 const request_initial = new XMLHttpRequest();
 const request_target = new XMLHttpRequest();
 
@@ -29,6 +30,7 @@ request_target.onreadystatechange = function() {
 
         if (request_target.status === 211) {
             response = JSON.parse(request_target.responseText);
+            toggle_active_player(players);
         } else if (request_target.status === 221) {
             target_box = undefined;
             init_box = undefined;
@@ -176,6 +178,14 @@ function toggle_legal_moves_box(legal_moves) {
         const legal_box = row_element.querySelector(`#${col_id}`);
         
         legal_box.classList.toggle('legal');
+    }
+}
+
+function toggle_active_player(players) {
+    if (!players) throw Error('Players not defined');
+
+    for (var i=0; i < players.length; i++) {
+        players[i].classList.toggle('active');
     }
 }
 
