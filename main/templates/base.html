@@ -5,11 +5,12 @@
 <link rel="preload" as="image" href="{{ url_for('static', filename='assets/logo.webp')}}">
 <link rel="preload" as="image" href="{{ url_for('static', filename='assets/player-d.png')}}">
 <link rel="preload" as="image" href="{{ url_for('static', filename='assets/player-l.png')}}">
+<script src="https://kit.fontawesome.com/b1d11126fc.js" crossorigin="anonymous"></script>
 <script>
     const url = '{{app_url}}/process_move';
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename='board.js') }}"></script>
-<nav>
+<nav class="dark-widget-bg">
     <div class="logo">
         <img src="{{ url_for('static', filename='assets/logo.webp') }}" alt="LOGO">
         <h1 class="title">WayOfChess</h1>
