@@ -2,46 +2,32 @@
 {% block content %}
 
 <div class="user-interaction">
-    {% set piece_position_table = session['piece_position_table']%}
-    {% set app_url = session['app_url']%}
-    <div class="chessboard-area">
-        <div class="player">
-            <div class="profile">
-                <img src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
-            </div>
-            <h3 class="name">Black</h3>
-            <div class="clock" id="clock-d">15:00</div>
+    <form action="POST" class="login-form dark-widget-bg">
+        <h3 class="heading">Player 1</h3>
+        <div class="input-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" name="username" placeholder="Username">
         </div>
-        <div class="chessboard">
-            {% for i in range(8,0,-1) %}
-            <div class="row" id="{{ i }}">
-                {% for j in range(8) %}
-                {% set j = 'ABCDEFGH'[j] %}
-                <div class="box" id="{{ j }}">
-                    {% set i = i | string() %}
-                    {% if i == '1' %}
-                        <div class="file-index">{{ j }}</div>
-                    {% endif %}
-                    {% if j == 'A' %}
-                        <div class="rank-index">{{ i }}</div>
-                    {% endif %}
-                    {% if j + i in piece_position_table.keys() %}
-                        {% set piece_type = piece_position_table[j + i] %}
-                        {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
-                        <img src="{{ url_for('static', filename=file_path) }}" alt="">
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
+        <div class="input-group">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" placeholder="{{ '*'*9 }}">
         </div>
-        <div class="player">
-            <div class="profile">
-                <img src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
-            </div>
-            <h3 class="name">White</h3>
-            <div class="clock" id="clock-l">15:00</div>
+        <button type="submit" name="player_login_l">Login</button>
+    </form>
+    <form method="POST" class="play-widget dark-widget-bg">
+        <button type="submit" name="play">Start Game</button>
+    </form>
+    <form action="POST" class="login-form dark-widget-bg">
+        <h3 class="heading">Player 2</h3>
+        <div class="input-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" name="username" placeholder="Username">
         </div>
-    </div>
+        <div class="input-group">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" placeholder="{{ '*'*9 }}">
+        </div>
+        <button type="submit" name="player_login_d">Login</button>
+    </form>
 </div>
 {% endblock %}

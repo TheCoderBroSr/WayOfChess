@@ -4,7 +4,7 @@ import os
 import json
 
 from flask import ( 
-    Flask, render_template, request, session, url_for, flash, jsonify , sessions    
+    Flask, render_template, request, session, url_for, flash, jsonify , sessions, redirect    
 )
 
 def create_app(test_config=None):
@@ -12,6 +12,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
+        SESSION_COOKIE_SAMESITE='strict',
         DATABASE=os.path.join(app.instance_path, 'main.sqlite'),
     )
 
@@ -33,6 +34,24 @@ def create_app(test_config=None):
 
     @app.route('/', methods=('GET', 'POST'))
     def index():
+        if 'app_url' not in session:
+            session['app_url'] = APP_URL
+
+        if 'game_start' not in session:
+            session['game_start'] = False
+
+        if request.method == "POST" and 'play' in request.form:
+            session['game_start'] = True
+            return redirect('/game')
+
+        # piece_position, curr_turn, moves, players -> session variables
+        return render_template('index.html')        
+
+    @app.route('/game', methods=('GET', 'POST'))
+    def game():
+        if 'game_start' not in session or not session['game_start']:
+            return redirect('/')
+
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
 
@@ -48,7 +67,7 @@ def create_app(test_config=None):
             session['app_url'] = APP_URL
 
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('index.html')        
+        return render_template('game.html')
 
     @app.route('/dev', methods=('GET', 'POST'))
     def dev():
@@ -63,7 +82,7 @@ def create_app(test_config=None):
         l -> light(white)
         d -> dark(black)
         '''
-
+        
         if request.method == "POST" and 'reset' in request.form:
             session.clear()
 
