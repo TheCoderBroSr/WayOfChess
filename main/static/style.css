@@ -1,4 +1,3 @@
-
 :root {
     --dark-bg-color: #222222;
     --light-bg-color: #555555;
@@ -13,7 +12,7 @@
 
     --navbar-width: 5em;
     --navbar-expanded-width: max(12.5em, calc(var(--navbar-width) * 3.5));
-    --navbar-darkness: 0.4;
+    --widget-darkness: 0.6;
 }
 
 body {
@@ -24,16 +23,18 @@ body {
     color: var(--light-text-color);
 }
 
+.dark-widget-bg  {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, var(--widget-darkness)),
+        rgba(0, 0, 0, var(--widget-darkness))
+      ) var(--dark-bg-color);
+}
 /* navbar */
 nav {
     display: inline-block;
     position: fixed;
-    height: 100vh;
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, var(--navbar-darkness)),
-        rgba(0, 0, 0, var(--navbar-darkness))
-      ) var(--dark-bg-color); 
+    height: 100vh; 
     width: var(--navbar-width);
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -64,9 +65,83 @@ nav .logo .title {
     color: var(--dark-bg-color);
 }
 
+/* player login form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    color: var(--light-text-color);
+    width: 22.5em;
+    height: 40vh;
+    box-sizing: border-box;
+}
+
+.login-form .input-group {
+    box-shadow: inset 2px 5px 20px #000;
+    display: flex;
+    width: 75%;
+}
+
+.login-form .input-group i {
+    padding: 0.75em;
+}
+
+.login-form .input-group input {
+    box-sizing: border-box;
+    background: transparent;
+    color: inherit;
+    outline: 0;
+    border: none;
+    padding: 0.75em;
+    width: 100%;
+}
+
+.login-form button {
+    margin-top: 10px;
+}
+
+.login-form .heading {
+    margin: 0 0 0.8em 0;
+}
+
+/* game start widget */
+.play-widget {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    width: 15em;
+    height: 30%;
+}
+
+.login-form button,
+.play-widget button {
+    outline: 0;
+    width: 75%;
+    padding: 0.75em;
+    box-sizing: border-box;
+    border: 3px solid transparent;
+    border-radius: 6px;
+    font-weight: bold;
+    color: var(--dark-bg-color);
+    background-color: var(--dark-blue-color);
+    transition: 500ms;
+}
+
+.login-form button:hover,
+.play-widget button:hover {
+    background-color: var(--light-blue-color);
+    cursor: pointer;
+}
+
 /* user interaction area */
 .user-interaction {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
     margin-left: var(--navbar-width);
     width: calc(100% - var(--navbar-width));
     height: 100vh;
@@ -127,11 +202,6 @@ nav .logo .title {
 
 /* chessboard players */
 .chessboard-area .player {
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, var(--navbar-darkness)),
-        rgba(0, 0, 0, var(--navbar-darkness))
-    ) var(--dark-bg-color);
     display: flex;
     box-sizing: border-box;
     gap: 20px;
@@ -139,6 +209,16 @@ nav .logo .title {
     border-radius: 6px;
     width: calc(var(--chessboard-width) + 6px);
     height: 4em;
+}
+
+.chessboard-area .player:not(.active) {
+    filter: brightness(0.6);
+}
+
+.chessboard-area .player.active {
+    border: 3px solid var(--light-green-color);
+    color: var(--light-text-color);
+    transition: 200ms ease-in-out;
 }
 
 .chessboard-area .player .profile {
@@ -173,9 +253,6 @@ nav .logo .title {
     height: 100%;
 }
 
-.chessboard-area .player.active {
-    border: 3px solid var(--light-green-color);
-}
 
 /* chessboard */
 .chessboard-area {
