@@ -18,7 +18,7 @@
     {% set app_url = session['app_url']%}
 
     <div class="chessboard-area">
-        <div class="player">
+        <div class="player dark-widget-bg">
             <div class="profile">
                 <img src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
             </div>
@@ -48,7 +48,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="player">
+        <div class="player dark-widget-bg active">
             <div class="profile">
                 <img src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
             </div>
