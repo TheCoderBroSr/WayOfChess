@@ -1,47 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+{% import 'macros.html' as macros %}
 
 <div class="user-interaction">
-    {% if 'username' not in session['players']['p1'] %}
-    <form action="login" method="POST" class="login-form dark-widget-bg">
-        <h3 class="heading">Player 1</h3>
-        <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" name="username" placeholder="Username">
-        </div>
-        <div class="input-group">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" name="password" placeholder="{{ '*'*9 }}">
-        </div>
-        <button type="submit" name="player_login_p1">Login</button>
-    </form>
-    {% else %}
-    <form action="logout" method="POST" class="login-form dark-widget-bg">
-        <h3 class="heading">Logged in as {{ session['players']['p1']['username'] }}</h3>
-        <button type="submit" name="logout_p1">logout</button>
-    </form>
-    {% endif %}
+    {{ macros.user_login_form('p1') }}
     <form method="POST" class="play-widget dark-widget-bg">
         <button type="submit" name="play">Start Game</button>
     </form>
-    {% if 'username' not in session['players']['p2'] %}
-    <form action="login" method="POST" class="login-form dark-widget-bg">
-        <h3 class="heading">Player 2</h3>
-        <div class="input-group">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" name="username" placeholder="Username">
-        </div>
-        <div class="input-group">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" name="password" placeholder="{{ '*'*9 }}">
-        </div>
-        <button type="submit" name="player_login_p2">Login</button>
-    </form>
-    {% else %}
-    <form action="logout" method="POST" class="login-form dark-widget-bg">
-        <h3 class="heading">Logged in as {{ session['players']['p2']['username'] }}</h3>
-        <button type="submit" name="logout_p2">logout</button>
-    </form>
-    {% endif %}
+    {{ macros.user_login_form('p2') }}
 </div>
 {% endblock %}

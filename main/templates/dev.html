@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% import "macros.html" as macros %}
 
 <div class="user-interaction">
     <div class="user-input">
@@ -14,47 +15,10 @@
         </form>
     </div>
     
-    {% set piece_position_table = session['piece_position_table']%}
-    {% set app_url = session['app_url']%}
-
     <div class="chessboard-area">
-        <div class="player dark-widget-bg">
-            <div class="profile">
-                <img src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
-            </div>
-            <h3 class="name">Black</h3>
-            <div class="clock" id="clock-l">15:00</div>
-        </div>
-        <div class="chessboard">
-            {% for i in range(8,0,-1) %}
-            <div class="row" id="{{ i }}">
-                {% for j in range(8) %}
-                {% set j = 'ABCDEFGH'[j] %}
-                <div class="box" id="{{ j }}">
-                    {% set i = i | string() %}
-                    {% if i == '1' %}
-                        <div class="file-index">{{ j }}</div>
-                    {% endif %}
-                    {% if j == 'A' %}
-                        <div class="rank-index">{{ i }}</div>
-                    {% endif %}
-                    {% if j + i in piece_position_table.keys() %}
-                        {% set piece_type = piece_position_table[j + i] %}
-                        {% set file_path = "assets/Chess_" + piece_type + "t45.svg" %}
-                        <img src="{{ url_for('static', filename=file_path) }}" alt="">
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-        <div class="player dark-widget-bg active">
-            <div class="profile">
-                <img src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
-            </div>
-            <h3 class="name">White</h3>
-            <div class="clock" id="clock-l">15:00</div>
-        </div>
+        {{ macros.player_widget('d', 'Black') }}
+        {{ macros.chessboard() }}
+        {{ macros.player_widget('l', 'White') }}
     </div>
 </div>
 {% endblock %}
