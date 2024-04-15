@@ -2,6 +2,7 @@ from . import moves
 from . import pieces
 import os
 import json
+import random
 
 from flask import ( 
     Flask, render_template, request, session, url_for, flash, jsonify , sessions, redirect    
@@ -40,6 +41,9 @@ def create_app(test_config=None):
         if 'game_start' not in session:
             session['game_start'] = False
 
+        if 'players' not in session:
+            session['players'] = {'p1':{}, 'p2':{}}
+
         if request.method == "POST" and 'play' in request.form:
             session['game_start'] = True
             return redirect('/game')
@@ -51,7 +55,10 @@ def create_app(test_config=None):
     def game():
         if 'game_start' not in session or not session['game_start']:
             return redirect('/')
-
+        
+        if not session['players'] or 'username' not in session['players']['p1'] or 'username' not in session['players']['p2']:
+            return redirect('/')
+        
         if 'piece_position_table' not in session:
             session['piece_position_table'] = moves.read_FEN(START_POSITION)
 
@@ -66,8 +73,23 @@ def create_app(test_config=None):
         if 'app_url' not in session:
             session['app_url'] = APP_URL
 
+        if 'piece_colour' not in session['players']['p1'] or 'piece_colour' not in session['players']['p2']:
+            players = session['players']
+            # Randomly assign piece colours to player
+            players['p1']['piece_colour'] = random.choice('ld')
+            players['p2']['piece_colour'] = 'ld'[players['p1']['piece_colour'] == 'l']
+
+            session['players'] = players
+
+        if session['players']['p1']['piece_colour'] == 'l':
+            player_username_l = session['players']['p1']['username']
+            player_username_d = session['players']['p2']['username']
+        else:
+            player_username_l = session['players']['p2']['username']
+            player_username_d = session['players']['p1']['username']
+
         # piece_position, curr_turn, moves, players -> session variables
-        return render_template('game.html')
+        return render_template('game.html', player_username_l=player_username_l, player_username_d=player_username_d)
 
     @app.route('/dev', methods=('GET', 'POST'))
     def dev():
@@ -109,6 +131,44 @@ def create_app(test_config=None):
 
         # piece_position, curr_turn, moves, players -> session variables
         return render_template('dev.html')
+    
+    @app.route('/login', methods=['POST'])
+    def login():
+        if 'players' not in session:
+            return 'Unauthorized Access', 401
+
+        if request.method == "POST" and 'player_login_p1' in request.form:
+            players = session['players']
+
+            username = request.form['username']
+            players['p1']['username'] = username
+            session['players'] = players
+
+        if request.method == "POST" and 'player_login_p2' in request.form:
+            players = session['players']
+
+            username = request.form['username']
+            players['p2']['username'] = username
+            session['players'] = players
+
+        return redirect('/')
+    
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        if 'players' not in session:
+            return 'Unauthorized Access', 401
+
+        if request.method == "POST" and 'logout_p1' in request.form:
+            players = session['players']
+            players['p1'] = {}
+            session['players'] = players
+
+        if request.method == "POST" and 'logout_p2' in request.form:
+            players = session['players']
+            players['p2'] = {}
+            session['players'] = players
+
+        return redirect('/')
 
     @app.route('/process_move', methods=['POST'])
     def process_move():

@@ -9,7 +9,7 @@
             <div class="profile">
                 <img src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
             </div>
-            <h3 class="name">Black</h3>
+            <h3 class="name">{{ player_username_d }}</h3>
             <div class="clock" id="clock-d">15:00</div>
         </div>
         <div class="chessboard">
@@ -39,7 +39,7 @@
             <div class="profile">
                 <img src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
             </div>
-            <h3 class="name">White</h3>
+            <h3 class="name">{{ player_username_l }}</h3>
             <div class="clock" id="clock-l">15:00</div>
         </div>
     </div>
