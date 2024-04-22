@@ -151,6 +151,12 @@ def create_app(test_config=None):
             players['p2']['username'] = username
             session['players'] = players
 
+        '''
+        To add:
+        Input Validation: Contains alphabets, a specific length, doesn't contain profanity.
+        DB integration: Check if user exists, Password verification.
+        '''
+
         return redirect('/')
     
     @app.route('/logout', methods=['POST'])
