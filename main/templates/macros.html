@@ -52,8 +52,9 @@
 {% endmacro%}
 
 <!-- player_colour = 'l' or 'd' -->
-{% macro player_widget(player_colour, player_name) %}
-<div class="player dark-widget-bg {{ ['', 'active'][player_colour == "l"] }}">
+{% macro player_widget(player_colour, player_name, turn_total) %}
+{% set current_player = 'ld'[turn_total % 2] %}
+<div class="player dark-widget-bg {{ ['', 'active'][player_colour == current_player] }}">
     <div class="profile">
         {% set profile_pic_path = 'assets/player-' + player_colour + '.png' %}
         <img src="{{ url_for('static', filename=profile_pic_path) }}" alt="default pic">

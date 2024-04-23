@@ -4,9 +4,9 @@
 
 <div class="user-interaction">
     <div class="chessboard-area">
-        {{ macros.player_widget('d', player_username_d) }}
+        {{ macros.player_widget('d', player_username_d, session['turn_total']) }}
         {{ macros.chessboard() }}
-        {{ macros.player_widget('l', player_username_l) }}
+        {{ macros.player_widget('l', player_username_l, session['turn_total']) }}
     </div>
 </div>
 {% endblock %}
