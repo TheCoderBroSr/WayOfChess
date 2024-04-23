@@ -60,7 +60,7 @@ def create_app(test_config=None):
             return redirect('/')
         
         if 'piece_position_table' not in session:
-            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+            _, session['piece_position_table'] = moves.read_FEN(START_POSITION)
 
         if 'can_castle' not in session:
             session['can_castle'] = {'l':'kq', 'd':'kq'}
@@ -113,12 +113,14 @@ def create_app(test_config=None):
 
             # Implement valid FEN string check
             try:
-                session['piece_position_table'] = moves.read_FEN(custom_position)
+                player_to_move, session['piece_position_table'] = moves.read_FEN(custom_position)
+                session['turn_total'] = [0, 1][player_to_move == 'b']
+
             except:
                 flash('Invalid FEN string')
 
         if 'piece_position_table' not in session:
-            session['piece_position_table'] = moves.read_FEN(START_POSITION)
+            _, session['piece_position_table'] = moves.read_FEN(START_POSITION)
 
         if 'app_url' not in session:
             session['app_url'] = APP_URL
@@ -214,14 +216,11 @@ def create_app(test_config=None):
             target_piece = piece_data['target_piece']
             target_position = piece_data['target_box_position']
                 
-            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle, target_position)
+            selected_piece_legal_moves = moves.legal_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle)
 
             if target_position not in selected_piece_legal_moves:
                 status_code = 221 # error illegal move
                 response_data = {'msg-type': 'error', 'msg':'illegal move made'}
-            #elif selected_piece_legal_moves == 'checkMate':
-             #   status_code = 231   
-              #  response_data = {'msg-type': 'success', 'msg':'CheckMate'}
             else:
                 selected_piece_type, selected_piece_colour = selected_piece
 
@@ -259,7 +258,18 @@ def create_app(test_config=None):
                     move_flag = [['capture', 'move'][target_piece == ''], 'check'][moves.in_check(piece_position_table, turn_total+1, can_castle)]
                     response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal', 'move_flag':move_flag}
                 
-                turn_total += 1
+                turn_total += 1 # legal move made by current player
+
+                # check game state immediately after it is opponent's turn
+                if moves.is_checkmate(piece_position_table, turn_total, can_castle):
+                    game_result = ['1-0','0-1'][turn_total % 2 == 0]
+
+                    response_data['game_state'] = 'checkmate' 
+                    response_data['game_result'] = game_result
+                    status_code = 231
+
+                    return jsonify(response_data), status_code
+
                 status_code = 211 # legal move
                 
             session['piece_position_table'] = piece_position_table
