@@ -1,3 +1,5 @@
+from typing import Union
+
 def read_FEN(fen_str: str) -> tuple[str, dict]:
     '''
     FEN -> Forsyth-Edwards Notation
@@ -65,7 +67,7 @@ def generate_square(token: int) -> str:
     return f"{file_letter}{rank_number}"
 
 
-def token_generator(piece_position: str) -> int:
+def token_generator(piece_position: str) -> Union[int, str]:
     '''
     output:[token , 'Invalid']
     '''
@@ -188,14 +190,19 @@ def legal_moves(piece_position_table: dict, selected_piece: str, selected_piece_
     Returns the legal moves of selected piece | [] (if none)
     '''
 
-    pieces = Piece(selected_piece[1], None)
-    if selected_piece[1] != pieces.turn(turn_total):
+    piece = Piece(selected_piece[1], token_generator(selected_piece_position))
+    if selected_piece[1] != piece.turn(turn_total):
         return []
 
     selected_piece_colour = selected_piece[1]
     legal_moves = []
 
     selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle)
+    
+    # Prevent castling when in check
+    if selected_piece[0] == 'k' and in_check(piece_position_table, turn_total, can_castle):
+        king = King(piece.colour, piece.token, can_castle)
+        selected_piece_possible_moves = list(filter(lambda move: not king.is_move_castle(move), selected_piece_possible_moves))
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
