@@ -84,7 +84,7 @@ def token_generator(piece_position: str) -> Union[int, str]:
     return token
 
 
-def token_piece_position_table_gen(piece_position_table):
+def token_piece_position_table_gen(piece_position_table: dict[str, str]) -> dict[int, str]:
     table = {}
 
     for key, val in piece_position_table.items():
@@ -92,6 +92,11 @@ def token_piece_position_table_gen(piece_position_table):
 
     return table
 
+def get_current_player(turn_total: int) -> str:
+    if turn_total % 2 == 0:
+        return 'l'
+    
+    return 'd'
 
 def get_piece_moves(piece_position_table: dict, selected_piece: str, selected_piece_position: str, turn_total: int, can_castle: dict) -> list:
     '''
@@ -147,7 +152,8 @@ def in_check(piece_position_table: dict, turn_total: int, can_castle: dict) -> b
     Returns if current player is in check
     '''
 
-    player, enemy = ['dl', 'ld'][turn_total % 2 == 0]
+    player = get_current_player(turn_total)
+    enemy = 'ld'[player=='l']
     player_king_position = get_piece_position(piece_position_table, 'k'+player)
 
     for position, piece in piece_position_table.items():
@@ -168,7 +174,7 @@ def is_checkmate(piece_position_table: dict, turn_total: int, can_castle: dict) 
     if not in_check(piece_position_table, turn_total, can_castle):
         return False
     
-    player = 'dl'[turn_total % 2 == 0]
+    player = get_current_player(turn_total)
 
     for position, piece in piece_position_table.items():
         if piece[1] == player:  # get player pieces
@@ -190,18 +196,18 @@ def legal_moves(piece_position_table: dict, selected_piece: str, selected_piece_
     Returns the legal moves of selected piece | [] (if none)
     '''
 
-    piece = Piece(selected_piece[1], token_generator(selected_piece_position))
-    if selected_piece[1] != piece.turn(turn_total):
+    if selected_piece[1] != get_current_player(turn_total):
         return []
 
-    selected_piece_colour = selected_piece[1]
     legal_moves = []
-
     selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle)
     
     # Prevent castling when in check
     if selected_piece[0] == 'k' and in_check(piece_position_table, turn_total, can_castle):
-        king = King(piece.colour, piece.token, can_castle)
+        selected_piece_colour = selected_piece[1]
+        selected_piece_token = token_generator(selected_piece_position)
+
+        king = King(selected_piece_colour, selected_piece_token, can_castle)
         selected_piece_possible_moves = list(filter(lambda move: not king.is_move_castle(move), selected_piece_possible_moves))
 
     for move in selected_piece_possible_moves:
