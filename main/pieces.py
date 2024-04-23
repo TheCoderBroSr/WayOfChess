@@ -11,7 +11,7 @@ class Piece:
         self.canCastle = None 
 
     def isvalidToken(self , token : int) -> bool:
-        if 1 <= token <=64 :
+        if 1 <= token <= 64 :
             return True
         else:
             return False
@@ -240,6 +240,12 @@ class King(Piece):
         self.canCastle = can_castle
         self.row = ((self.token - 1)//8) + 1
 
-    def legal_moves_generator(self, token_piece_position_table: dict):
+    def legal_moves_generator(self, token_piece_position_table: dict) -> list:
         super(self.__class__, self).legal_moves_generator_king(token_piece_position_table , self.canCastle)
-        return self.legal_moves  
+        return self.legal_moves
+    
+    def is_move_castle(self, move: str) -> bool:
+        move_token = moves.token_generator(move)
+        castle_tokens = [3, 7, 59, 63]
+
+        return move_token in castle_tokens
