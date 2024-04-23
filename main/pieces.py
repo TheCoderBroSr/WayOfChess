@@ -11,10 +11,7 @@ class Piece:
         self.canCastle = None 
 
     def isvalidToken(self , token : int) -> bool:
-        if 1 <= token <= 64 :
-            return True
-        else:
-            return False
+        return 1 <= token <= 64
 
     def token_target_description(self, token_piece_position_table:dict, token_target_position:int, offset_val = 0) -> str:
         '''
@@ -146,12 +143,6 @@ class Piece:
         
         if 'q' in player_can_castle and queenside_adj_position in self.legal_moves and moves.token_generator(queenside_castle_position) not in token_piece_position_table:
             self.legal_moves.append('C' + self.row)
-
-    def turn(self ,turn_total):
-        if turn_total % 2 == 1:
-            return 'd'
-        else:
-            return 'l'
                 
 class Rook(Piece):
     def __init__(self, colour, token) -> None:
