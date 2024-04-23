@@ -39,6 +39,11 @@ request_target.onreadystatechange = function() {
     
             legal_moves = undefined;
 
+        } else if (request_target.status === 231) {
+            response = JSON.parse(request_target.responseText);
+            disable_players(players);
+
+            console.log(response.game_result);
         } else {
             console.error('Error:', request_target.status);
         }
@@ -186,6 +191,14 @@ function toggle_active_player(players) {
 
     for (var i=0; i < players.length; i++) {
         players[i].classList.toggle('active');
+    }
+}
+
+function disable_players(players) {
+    if (!players) throw Error('Players not defined');
+
+    for (var i=0; i < players.length; i++) {
+        players[i].classList.remove('active');
     }
 }
 
