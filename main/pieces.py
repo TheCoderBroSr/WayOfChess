@@ -241,9 +241,6 @@ class King(Piece):
 
         return move_token in self.castle_tokens
     
-    def get_castle_squares(self) -> list:
-        return list(map(moves.generate_square, self.castle_tokens))
-    
     def get_adjacent_castle_sqaures(self, castle_move: str) -> list:
         castle_move_token = moves.token_generator(castle_move)
 
