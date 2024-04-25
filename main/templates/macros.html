@@ -63,3 +63,39 @@
     <div class="clock" id="clock-{{ player_colour }}">15:00</div>
 </div>
 {% endmacro %}
+
+<!-- game_state = 'checkmate' or 'draw' or 'ongoing'-->
+<!-- game_result = ('1-0' or '0-1') or '0.5-0.5'-->
+{% macro game_end_modal(game_state, game_result, player_username_l, player_username_d) %}
+{% if game_state != 'ongoing' %}
+<dialog class="game-end-results" id="game-end-results">
+    {% if game_state == 'checkmate' %}
+        <h3 class="title">{{ [player_username_d, player_username_l][game_result == '1-0'] }} Won!</h3>
+        <h4 class="subtitle">By {{ ['Draw', 'Checkmate'][game_state == 'checkmate'] }}</h4>
+
+        {% if game_result == "1-0" %}
+            {% set player_l_img_class = 'active' %}
+            {% set player_d_img_class = '' %}
+        {% else %}
+            {% set player_l_img_class = '' %}
+            {% set player_d_img_class = 'active' %}
+        {% endif %}
+    {% else %}
+        <h3 class="title">Draw</h3>        
+        <!-- <h4>By </h4> To be implemented-->
+    {% endif %}
+    <div class="player-overview">
+        <div class="player-widget">
+            <img class="{{ player_l_img_class }}" src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
+            <h4>{{ player_username_l }}</h4>
+        </div>
+        <h4>{{ game_result }}</h4>
+        <div class="player-widget">
+            <img class="{{ player_d_img_class }}" src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
+            <h4>{{ player_username_d }}</h4>
+        </div>
+    </div>
+    <button>Rematch</button>
+</dialog>
+{% endif %}
+{% endmacro %}
