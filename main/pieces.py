@@ -122,7 +122,7 @@ class Piece:
             if token_target_description == 'empty' or token_target_description == 'diffColour':
                 self.legal_moves.append(moves.generate_square(target_position))
 
-    def legal_moves_generator_king(self, token_piece_position_table:dict, can_castle):
+    def legal_moves_generator_king(self, token_piece_position_table:dict, can_castle:dict):
         for offset in self.directional_offset:
             target_position = self.token + offset
             token_target_description = token_target_description = self.token_target_description(token_piece_position_table , target_position , offset_val=offset)
@@ -230,6 +230,7 @@ class King(Piece):
         self.directional_offset = [8 , 9 , 1 , -9 , -8 , -7 , 7 , -1]
         self.canCastle = can_castle
         self.row = ((self.token - 1)//8) + 1
+        self.castle_tokens = [[3, 7], [59, 63]][self.colour=="d"]
 
     def legal_moves_generator(self, token_piece_position_table: dict) -> list:
         super(self.__class__, self).legal_moves_generator_king(token_piece_position_table , self.canCastle)
@@ -237,6 +238,18 @@ class King(Piece):
     
     def is_move_castle(self, move: str) -> bool:
         move_token = moves.token_generator(move)
-        castle_tokens = [3, 7, 59, 63]
 
-        return move_token in castle_tokens
+        return move_token in self.castle_tokens
+    
+    def get_castle_squares(self) -> list:
+        return list(map(moves.generate_square, self.castle_tokens))
+    
+    def get_adjacent_castle_sqaures(self, castle_move: str) -> list:
+        castle_move_token = moves.token_generator(castle_move)
+
+        if castle_move_token not in self.castle_tokens:
+            return [-1]
+        
+        if castle_move_token == self.castle_tokens[0]:
+            return [moves.generate_square(castle_move_token-1), moves.generate_square(castle_move_token+1)]
+        return [moves.generate_square(castle_move_token-1)]

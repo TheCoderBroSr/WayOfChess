@@ -202,13 +202,32 @@ def legal_moves(piece_position_table: dict, selected_piece: str, selected_piece_
     legal_moves = []
     selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle)
     
-    # Prevent castling when in check
-    if selected_piece[0] == 'k' and in_check(piece_position_table, turn_total, can_castle):
+    # Handle Castling Edge Cases
+    if selected_piece[0] == 'k':
         selected_piece_colour = selected_piece[1]
+        enemy_piece_colour = 'ld'[selected_piece_colour == 'l']
         selected_piece_token = token_generator(selected_piece_position)
 
         king = King(selected_piece_colour, selected_piece_token, can_castle)
-        selected_piece_possible_moves = list(filter(lambda move: not king.is_move_castle(move), selected_piece_possible_moves))
+        
+        # Prevent castling when in check
+        if in_check(piece_position_table, turn_total, can_castle):
+            selected_piece_possible_moves = list(filter(lambda move: not king.is_move_castle(move), selected_piece_possible_moves))
+
+        # Prevent castling if an enemy piece targets squares in between king and rook
+        elif any(map(king.is_move_castle, selected_piece_possible_moves)):
+            for position, piece in piece_position_table.items():
+                if piece[1] == enemy_piece_colour:
+                    enemy_piece_target_squares = get_piece_moves(piece_position_table, piece, position, turn_total+1, can_castle)
+                    
+                    for castle_move in king.get_castle_squares():
+                        adjacent_castle_squares = king.get_adjacent_castle_sqaures(castle_move)
+
+                        if any(map(lambda x: x in adjacent_castle_squares, enemy_piece_target_squares)):
+                            selected_piece_possible_moves.remove(castle_move)
+
+                if not any(map(king.is_move_castle, selected_piece_possible_moves)):
+                    break
 
     for move in selected_piece_possible_moves:
         # Simulate the move and see if it puts king in check
