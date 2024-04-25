@@ -9,6 +9,8 @@
     
     --chess-box-width: 3.5em;
     --chessboard-width: calc(var(--chess-box-width) * 8);
+    --chessboard-player-height: max(calc(0.5*(100vh - 26px - var(--chessboard-width))), 2em);
+    --chessboard-player-edge-margin: 0.4em;
 
     --navbar-width: 5em;
     --navbar-expanded-width: max(12.5em, calc(var(--navbar-width) * 3.5));
@@ -229,6 +231,7 @@ dialog.game-end-results {
     border-radius: 6px;
     outline: 0;
     border: none;
+    transition: 750ms ease-in;
 }
 
 dialog.game-end-results::backdrop {
@@ -264,6 +267,7 @@ dialog.game-end-results .player-overview {
 }
 
 dialog.game-end-results .player-overview .player-widget {
+    width: 6em;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -299,7 +303,7 @@ dialog.game-end-results button:hover {
     align-items: center;
     border-radius: 6px;
     width: calc(var(--chessboard-width) + 6px);
-    height: 4em;
+    height: var(--chessboard-player-height);
 }
 
 .chessboard-area .player:not(.active) {
@@ -313,15 +317,15 @@ dialog.game-end-results button:hover {
 }
 
 .chessboard-area .player .profile {
-    width: 25%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: var(--chessboard-player-edge-margin);
 }
 
 .chessboard-area .player .profile img {
-    --img-size: 3em;
+    --img-size: calc(0.75 * var(--chessboard-player-height));
     border-radius: 5px;
     width: var(--img-size);
     height: var(--img-size);
@@ -340,7 +344,7 @@ dialog.game-end-results button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 10em;
+    margin-right: var(--chessboard-player-edge-margin);
     height: 100%;
 }
 
