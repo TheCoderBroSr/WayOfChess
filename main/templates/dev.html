@@ -16,9 +16,9 @@
     </div>
     
     <div class="chessboard-area">
-        {{ macros.player_widget('d', 'Black') }}
+        {{ macros.player_widget('d', 'Black', session['turn_total']) }}
         {{ macros.chessboard() }}
-        {{ macros.player_widget('l', 'White') }}
+        {{ macros.player_widget('l', 'White', session['turn_total']) }}
     </div>
 </div>
 {% endblock %}
