@@ -220,7 +220,7 @@ def legal_moves(piece_position_table: dict, selected_piece: str, selected_piece_
                 if piece[1] == enemy_piece_colour:
                     enemy_piece_target_squares = get_piece_moves(piece_position_table, piece, position, turn_total+1, can_castle)
                     
-                    for castle_move in king.get_castle_squares():
+                    for castle_move in filter(king.is_move_castle, selected_piece_possible_moves):
                         adjacent_castle_squares = king.get_adjacent_castle_sqaures(castle_move)
 
                         if any(map(lambda x: x in adjacent_castle_squares, enemy_piece_target_squares)):
