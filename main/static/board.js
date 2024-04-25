@@ -14,10 +14,10 @@ request_initial.onreadystatechange = function() {
     if (request_initial.readyState === XMLHttpRequest.DONE) {
         if (request_initial.status === 210) {
             response = JSON.parse(request_initial.responseText);
-
+            
             legal_moves = response.legal_moves;
             toggle_legal_moves_box(legal_moves);
-
+            
         } else {
             console.error('Error:', request_initial.status);
         }
@@ -27,27 +27,31 @@ request_initial.onreadystatechange = function() {
 request_target.onreadystatechange = function() {
     if (request_target.readyState === XMLHttpRequest.DONE) {
         let response = undefined;
-
+        
         if (request_target.status === 211) {
             response = JSON.parse(request_target.responseText);
             toggle_active_player(players);
         } else if (request_target.status === 221) {
             target_box = undefined;
             init_box = undefined;
-
+            
             toggle_legal_moves_box(legal_moves);
-    
+            
             legal_moves = undefined;
-
+            
         } else if (request_target.status === 231) {
+            let game_end_modal = document.getElementById("game-end-results");
+
             response = JSON.parse(request_target.responseText);
             disable_players(players);
-
+            
+            game_end_modal.showModal();
+            game_end_modal.classList.add('show-modal');
             console.log(response.game_result);
         } else {
             console.error('Error:', request_target.status);
         }
-
+        
         if (response && response.move_type === 'normal') {
             if (response.move_flag === 'check') {
                 play_audio_clip('move_check');
@@ -57,34 +61,34 @@ request_target.onreadystatechange = function() {
             } else {
                 play_audio_clip('move_capture');
             }
-
+            
             update_target_box_element(init_box, target_box);
             
             target_box = undefined;
             init_box = undefined;
-    
+            
             toggle_legal_moves_box(legal_moves);
-    
+            
             legal_moves = undefined;
         } else if(response && response.move_type === 'c') {
             play_audio_clip('move_castle');
-
+            
             let row_id = init_box.parentNode.id;
             let rook_castle_box_id = target_box.id > init_box.id ? 'H' : 'A'; 
             let rook_target_box_id = rook_castle_box_id == 'H' ? 'F':'D';
-
+            
             
             let rook_castle_box = document.querySelector(`div[id='${row_id}'] div[id='${rook_castle_box_id}']`);   
             let rook_target_box = document.querySelector(`div[id='${row_id}'] div[id='${rook_target_box_id}']`);
-
+            
             update_target_box_element(init_box, target_box);
             update_target_box_element(rook_castle_box, rook_target_box);
-
+            
             target_box = undefined;
             init_box = undefined;
-    
+            
             toggle_legal_moves_box(legal_moves);
-    
+            
             legal_moves = undefined;
         } 
     }
@@ -92,7 +96,7 @@ request_target.onreadystatechange = function() {
 
 window.onclick = e => {
     let box, piece_type;
-
+    
     if (e.target.tagName == "IMG") {// checks if selected square has an piece
         let img = e.target;
         box = img.parentNode;
@@ -104,7 +108,7 @@ window.onclick = e => {
         box = e.target; 
     } else if(e.target.classList.contains("file-index") || e.target.classList.contains("rank-index")) {
         box = e.target.parentNode;
-
+        
         let img = box.querySelector('img') !== null ? box.querySelector('img') : undefined;
         let img_path = img ? img.src.split('/') : undefined;
         piece_type = img_path ? img_path.at(-1) : undefined;
