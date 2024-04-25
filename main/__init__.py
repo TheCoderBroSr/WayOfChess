@@ -267,10 +267,8 @@ def create_app(test_config=None):
                     response_data['game_state'] = 'checkmate' 
                     response_data['game_result'] = game_result
                     status_code = 231
-
-                    return jsonify(response_data), status_code
-
-                status_code = 211 # legal move
+                else:
+                    status_code = 211 # legal move
                 
             session['piece_position_table'] = piece_position_table
             session['turn_total'] = turn_total
