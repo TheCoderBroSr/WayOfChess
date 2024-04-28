@@ -203,7 +203,7 @@ def legal_moves(piece_position_table: dict, selected_piece: str, selected_piece_
     selected_piece_possible_moves = get_piece_moves(piece_position_table, selected_piece, selected_piece_position, turn_total, can_castle)
     
     # Handle Castling Edge Cases
-    if selected_piece[0] == 'k':
+    if selected_piece[0] == 'k' and can_castle[selected_piece[1]]:
         selected_piece_colour = selected_piece[1]
         enemy_piece_colour = 'ld'[selected_piece_colour == 'l']
         selected_piece_token = token_generator(selected_piece_position)
