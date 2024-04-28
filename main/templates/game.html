@@ -2,7 +2,7 @@
 {% block content %}
 {% import 'macros.html' as macros %}
 
-{{ macros.game_end_modal('checkmate', '1-0', player_username_l, player_username_d) }}
+<div id="game-end-modal"></div>
 <div class="user-interaction">
     <div class="chessboard-area">
         {{ macros.player_widget('d', player_username_d, session['turn_total']) }}
@@ -10,4 +10,10 @@
         {{ macros.player_widget('l', player_username_l, session['turn_total']) }}
     </div>
 </div>
+
+{% if session['game_state'] != 'ongoing' %}
+<script>
+    display_modal('game-end-results');
+</script>
+{% endif %}
 {% endblock %}

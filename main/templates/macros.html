@@ -54,7 +54,7 @@
 <!-- player_colour = 'l' or 'd' -->
 {% macro player_widget(player_colour, player_name, turn_total) %}
 {% set current_player = 'ld'[turn_total % 2] %}
-<div class="player dark-widget-bg {{ ['', 'active'][player_colour == current_player] }}">
+<div class="player dark-widget-bg {{ ['', 'active'][session['game_state'] == 'ongoing' and player_colour == current_player] }}">
     <div class="profile">
         {% set profile_pic_path = 'assets/player-' + player_colour + '.png' %}
         <img src="{{ url_for('static', filename=profile_pic_path) }}" alt="default pic">
@@ -86,16 +86,21 @@
     {% endif %}
     <div class="player-overview">
         <div class="player-widget">
-            <img class="{{ player_l_img_class }}" src="{{ url_for('static', filename='assets/player-l.png') }}" alt="default pic">
+            <img class="{{ player_l_img_class }}" src="static/assets/player-l.png" alt="default pic">
             <h4>{{ player_username_l }}</h4>
         </div>
         <h4>{{ game_result }}</h4>
         <div class="player-widget">
-            <img class="{{ player_d_img_class }}" src="{{ url_for('static', filename='assets/player-d.png') }}" alt="default pic">
+            <img class="{{ player_d_img_class }}" src="static/assets/player-d.png" alt="default pic">
             <h4>{{ player_username_d }}</h4>
         </div>
     </div>
-    <button>Rematch</button>
+    <form action="rematch" method="POST">
+        <div class="button-cluster">
+            <button type="submit" name="rematch">Rematch</button>
+            <button type="button" onClick="handle_close('game-end-results')" name="close">Close</button>
+        </div>
+    </form>
 </dialog>
 {% endif %}
 {% endmacro %}

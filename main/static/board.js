@@ -1,4 +1,6 @@
 const audio_files = {
+    game_start: "/static/assets/game-start.mp3",
+    game_end: "/static/assets/game-end.mp3",
     move_self: "/static/assets/move-self.mp3",
     move_check: "/static/assets/move-check.mp3",
     move_capture: "/static/assets/capture.mp3",
@@ -40,14 +42,11 @@ request_target.onreadystatechange = function() {
             legal_moves = undefined;
             
         } else if (request_target.status === 231) {
-            let game_end_modal = document.getElementById("game-end-results");
+            play_audio_clip('game_end');
 
             response = JSON.parse(request_target.responseText);
+            display_modal('game-end-results');
             disable_players(players);
-            
-            game_end_modal.showModal();
-            game_end_modal.classList.add('show-modal');
-            console.log(response.game_result);
         } else {
             console.error('Error:', request_target.status);
         }
@@ -174,6 +173,30 @@ function send_target_box_data(request, url, piece_type, row, box) {
     }
 
     send_POST_data(request, url, target_box_data)
+}
+
+function display_modal(modal_id) {
+    let game_end_modal_container = document.getElementById("game-end-modal");
+    const request_modal = new XMLHttpRequest();
+    request_modal.open("GET", '/get_modal');
+    request_modal.send();
+
+    request_modal.onreadystatechange = function () {
+        if (request_modal.readyState === XMLHttpRequest.DONE) {
+            response = request_modal.responseText;
+            game_end_modal_container.insertAdjacentHTML('beforeend', response);
+    
+            let modal = document.getElementById(modal_id);
+            modal.showModal();
+            modal.classList.add('show-modal');
+        }
+    }
+}
+
+function handle_close(modal_id) {
+    let modal = document.getElementById(modal_id);
+    modal.close();
+    modal.classList.remove('show-modal');
 }
 
 function toggle_legal_moves_box(legal_moves) {

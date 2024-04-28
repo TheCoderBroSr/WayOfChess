@@ -5,7 +5,11 @@ import json
 import random
 
 from flask import ( 
-    Flask, render_template, request, session, url_for, flash, jsonify , sessions, redirect    
+    Flask, render_template, request, session, url_for, flash, jsonify, redirect, render_template_string
+)
+
+from jinja2 import (
+    Environment, FileSystemLoader, select_autoescape
 )
 
 def create_app(test_config=None):
@@ -13,8 +17,12 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SESSION_COOKIE_SAMESITE='strict',
         DATABASE=os.path.join(app.instance_path, 'main.sqlite'),
+    )
+
+    jinja_env = Environment(
+        loader=FileSystemLoader(searchpath="main/templates"),
+        autoescape=select_autoescape(['html', 'xml'])
     )
 
     if test_config is None:
@@ -72,6 +80,12 @@ def create_app(test_config=None):
 
         if 'app_url' not in session:
             session['app_url'] = APP_URL
+
+        if 'game_state' not in session:
+            session['game_state'] = 'ongoing'
+
+        if 'game_result' not in session:
+            session['game_result'] = None
 
         if 'piece_colour' not in session['players']['p1'] or 'piece_colour' not in session['players']['p2']:
             players = session['players']
@@ -134,6 +148,27 @@ def create_app(test_config=None):
         # piece_position, curr_turn, moves, players -> session variables
         return render_template('dev.html')
     
+    @app.route('/rematch', methods=['POST'])
+    def rematch():
+        if 'players' not in session:
+            return 'Unauthorized Access', 401
+        
+        if request.method == "POST" and 'rematch' in request.form:
+            players = session['players']
+            del players['p1']['piece_colour']
+            del players['p2']['piece_colour']
+
+            game_start = session['game_start']
+
+            session.clear()
+
+            session['players'] = players
+            session['game_start'] = game_start
+
+            return redirect('/game')
+        
+        return 'Unauthorized Access', 401
+    
     @app.route('/login', methods=['POST'])
     def login():
         if 'players' not in session:
@@ -177,6 +212,22 @@ def create_app(test_config=None):
             session['players'] = players
 
         return redirect('/')
+    
+    @app.route('/get_modal', methods=['GET'])
+    def get_modal():
+        # Import macros from the template file
+        template = jinja_env.get_template('macros.html')
+
+        if session['players']['p1']['piece_colour'] == 'l':
+            player_username_l = session['players']['p1']['username']
+            player_username_d = session['players']['p2']['username']
+        else:
+            player_username_l = session['players']['p2']['username']
+            player_username_d = session['players']['p1']['username']
+
+        # Render only the 'game_end_modal' macro into HTML
+        rendered_modal = template.module.game_end_modal(session['game_state'],session['game_result'],player_username_l,player_username_d)
+        return rendered_modal
 
     @app.route('/process_move', methods=['POST'])
     def process_move():
@@ -264,8 +315,11 @@ def create_app(test_config=None):
                 if moves.is_checkmate(piece_position_table, turn_total, can_castle):
                     game_result = ['1-0','0-1'][turn_total % 2 == 0]
 
-                    response_data['game_state'] = 'checkmate' 
-                    response_data['game_result'] = game_result
+                    session['game_state'] = 'checkmate'
+                    session['game_result'] = game_result
+
+                    response_data['game_state'] = session['game_state']
+                    response_data['game_result'] = session['game_result']
                     status_code = 231
                 else:
                     status_code = 211 # legal move
