@@ -242,6 +242,12 @@ function update_target_box_element(init_box, target_box) {
     }
 }
 
+function play_game_start_audio() {
+    window.onload = e => {
+        play_audio_clip('game_start');
+    }
+}
+
 function play_audio_clip(audio_name) {
     if (audio_files.hasOwnProperty(audio_name)) {
         const audio = new Audio(audio_files[audio_name]);

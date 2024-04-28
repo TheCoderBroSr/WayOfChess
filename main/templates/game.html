@@ -16,4 +16,10 @@
     display_modal('game-end-results');
 </script>
 {% endif %}
+
+{% if session['turn_total'] == 0 %}
+<script>
+    play_game_start_audio();
+</script>
+{% endif %}
 {% endblock %}
