@@ -258,7 +258,7 @@ def create_app(test_config=None):
 
             return jsonify(response_data), status_code
         
-        if piece_data['data'] == 'target_data':
+        elif piece_data['data'] == 'target_data':
             selected_piece = session['selected_piece']
             selected_piece_position = session['selected_piece_position']
             can_castle = session['can_castle']
@@ -272,63 +272,62 @@ def create_app(test_config=None):
             if target_position not in selected_piece_legal_moves:
                 status_code = 221 # error illegal move
                 response_data = {'msg-type': 'error', 'msg':'illegal move made'}
+                
+                return jsonify(response_data), status_code
+
+            selected_piece_type, selected_piece_colour = selected_piece
+
+            # Handle castling
+            if selected_piece_type == 'k' and selected_piece_position[0] == "E" and target_position[0] in 'CG': # target_position column
+                # selected_piece_postion = E1/E8
+                # target_position = G1/G8/C1/C8
+                # If E<G -> king side castle
+                # If E>C -> queen side castle
+                
+                rook_init_position = 'AH'[selected_piece_position[0] < target_position[0]] + selected_piece_position[1]
+                rook_target_position = 'DF'[rook_init_position[0] == 'H'] + selected_piece_position[1]
+
+                moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
+                moves.update_board(piece_position_table, 'r' + selected_piece_colour, rook_init_position, rook_target_position)
+
+                can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k' if target_position[0] == 'G' else 'q', '')
+
+                response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
             else:
-                selected_piece_type, selected_piece_colour = selected_piece
+                # Remove castling ability when king/rook moved (not castle)
+                if can_castle[selected_piece_colour] and selected_piece_type == 'k': # Piece being moves is a king (not castle)
+                    can_castle[selected_piece_colour] = ''
+                elif can_castle[selected_piece_colour] and selected_piece_type == 'r':
+                    can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k' if selected_piece_position > 'E' else 'q', '')
 
-                if selected_piece_type == 'k' and selected_piece_position[0] == "E" and target_position[0] in 'CG': # target_position column
-                    # Handle castling
-                    
-                    # selected_piece_postion = E1/E8
-                    # target_position = G1/G8/C1/C8
-                    # If E<G -> king side castle
-                    # If E>C -> queen side castle
+                moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
 
-                    rook_init_position = 'AH'[selected_piece_position[0] < target_position[0]] + selected_piece_position[1]
-                    rook_target_position = 'DF'[rook_init_position[0] == 'H'] + selected_piece_position[1]
+                move_flag = [['capture', 'move'][target_piece == ''], 'check'][moves.in_check(piece_position_table, turn_total+1, can_castle)]
+                response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal', 'move_flag':move_flag}
+            
+            status_code = 211 # legal move
+            turn_total += 1 # legal move made by current player
 
-                    moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-                    moves.update_board(piece_position_table, 'r' + selected_piece_colour, rook_init_position, rook_target_position) 
+            # check game state immediately after it is opponent's turn
+            if moves.is_checkmate(piece_position_table, turn_total, can_castle):
+                game_result = ['1-0','0-1'][turn_total % 2 == 0]
 
-                    if target_position[0] == 'G':
-                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k', '')
-                    else:
-                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('q', '')
+                session['game_state'] = 'checkmate'
+                session['game_result'] = game_result
 
-                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'c'} #c-> castle
-                else:
-                    # Remove castling ability when king/rook moved (not castle)
-                    if can_castle[selected_piece_colour] and selected_piece_type == 'k': # Piece being moves is a king (not castle)
-                        can_castle[selected_piece_colour] = ''
-                    elif can_castle[selected_piece_colour] and selected_piece_type == 'r' and selected_piece_position > 'E':
-                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('k', '')
-                    elif can_castle[selected_piece_colour] and selected_piece_type == 'r':
-                        can_castle[selected_piece_colour] = can_castle[selected_piece_colour].replace('q', '')
-
-                    moves.update_board(piece_position_table, selected_piece, selected_piece_position, target_position)
-
-                    move_flag = [['capture', 'move'][target_piece == ''], 'check'][moves.in_check(piece_position_table, turn_total+1, can_castle)]
-                    response_data = {'msg_type': 'success', 'msg': 'legal move made', 'move_type': 'normal', 'move_flag':move_flag}
-                
-                turn_total += 1 # legal move made by current player
-
-                # check game state immediately after it is opponent's turn
-                if moves.is_checkmate(piece_position_table, turn_total, can_castle):
-                    game_result = ['1-0','0-1'][turn_total % 2 == 0]
-
-                    session['game_state'] = 'checkmate'
-                    session['game_result'] = game_result
-
-                    response_data['game_state'] = session['game_state']
-                    response_data['game_result'] = session['game_result']
-                    status_code = 231
-                else:
-                    status_code = 211 # legal move
-                
-            session['piece_position_table'] = piece_position_table
-            session['turn_total'] = turn_total
-            session['can_castle'] = can_castle
-            session['selected_piece'] = None
-            session['selected_piece_position'] = None
+                response_data['game_state'] = session['game_state']
+                response_data['game_result'] = session['game_result']
+                status_code = 231
+            
+            session.update(
+                {
+                    'piece_position_table':piece_position_table,
+                    'turn_total':turn_total,
+                    'can_castle':can_castle,
+                    'selected_piece':None,
+                    'selected_piece_position':None
+                }
+            )
 
             return jsonify(response_data), status_code
         
