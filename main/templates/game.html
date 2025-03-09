@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<body class="game">
 {% import 'macros.html' as macros %}
 
 <div id="game-end-modal"></div>
@@ -22,4 +23,5 @@
     play_game_start_audio();
 </script>
 {% endif %}
+</body>
 {% endblock %}

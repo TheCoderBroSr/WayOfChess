@@ -1,5 +1,5 @@
 :root {
-    --dark-bg-color: #222222;
+    --dark-bg-color: #312f2f;
     --light-bg-color: #555555;
     --light-text-color: #EAEAEA;
     --light-blue-color: #3eb4a8;
@@ -22,8 +22,17 @@ body {
     margin: 0;
     top: 0;
     font-family: sans-serif;
-    background-color: var(--dark-bg-color);
+    background-image: repeating-conic-gradient(
+        from 45deg,
+        var(--dark-bg-color) 0deg 89.9deg,
+        var(--light-bg-color) 90deg 179.9deg);
+    background-size: 5em 5em;
     color: var(--light-text-color);
+    backdrop-filter: brightness(0.9);
+}
+
+body.game {
+    background: var(--dark-bg-color);
 }
 
 .dark-widget-bg  {
@@ -321,7 +330,7 @@ dialog.game-end-results .button-cluster button[name='close'] {
 }
 
 .chessboard-area .player:not(.active) {
-    filter: brightness(0.6);
+    filter: brightness(0.7);
 }
 
 .chessboard-area .player.active {
